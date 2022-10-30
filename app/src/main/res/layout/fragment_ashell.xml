@@ -1,0 +1,97 @@
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:gravity="top|center_vertical"
+        android:background="@color/colorBlack"
+        android:orientation="horizontal" >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:gravity="center_vertical"
+            android:textColor="@color/ColorBlue"
+            android:text="@string/app_name"
+            android:padding="10dp"
+            android:textSize="23sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_refresh"
+            android:background="@null"
+            android:tint="@color/ColorBlue" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_history"
+            android:tint="@color/ColorBlue"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@null"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_info"
+            android:background="@null"
+            android:tint="@color/ColorBlue" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="@color/ColorBlue"
+        android:hint="@string/command_title" >
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/shell_command"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center"
+            android:textColor="@color/ColorBlue"
+            android:hint="@string/command_hint"
+            android:inputType="textMultiLine"
+            android:gravity="center_vertical"
+            android:imeOptions="actionSend"
+            android:cursorVisible="true"
+            android:layout_margin="5dp"
+            android:padding="10dp"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:layout_margin="15dp" >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/shell_output"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:layout_gravity="start"
+            android:textStyle="bold"
+            android:textSize="15sp" />
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
