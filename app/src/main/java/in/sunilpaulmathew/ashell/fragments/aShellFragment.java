@@ -54,7 +54,7 @@ public class aShellFragment extends Fragment {
         mOutput = mRootView.findViewById(R.id.shell_output);
         AppCompatImageButton mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
-        AppCompatImageButton mInfoButton = mRootView.findViewById(R.id.info);
+        AppCompatImageButton mSettingsButton = mRootView.findViewById(R.id.settings);
 
         mCommand.requestFocus();
 
@@ -73,12 +73,32 @@ public class aShellFragment extends Fragment {
             }
         });
 
-        mInfoButton.setOnClickListener(v -> new MaterialAlertDialogBuilder(requireActivity())
-                .setIcon(R.mipmap.ic_launcher)
-                .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
-                .setMessage(getString(R.string.app_summary))
-                .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
-                }).show());
+        mSettingsButton.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(requireContext(), mSettingsButton);
+            Menu menu = popupMenu.getMenu();
+            menu.add(Menu.NONE, 0, Menu.NONE, R.string.change_logs);
+            menu.add(Menu.NONE, 1, Menu.NONE, R.string.about);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == 0) {
+                    new MaterialAlertDialogBuilder(requireActivity())
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle(getString(R.string.change_logs))
+                            .setMessage(getString(R.string.change_logs_summary, getString(
+                                    R.string.app_name) + " " + BuildConfig.VERSION_NAME))
+                            .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                            }).show();
+                } else if (item.getItemId() == 1) {
+                    new MaterialAlertDialogBuilder(requireActivity())
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
+                            .setMessage(getString(R.string.app_summary))
+                            .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                            }).show();
+                }
+                return false;
+            });
+            popupMenu.show();
+        });
 
         mClearButton.setOnClickListener(v -> mOutput.setText(null));
 
@@ -130,10 +150,11 @@ public class aShellFragment extends Fragment {
             } else {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     new MaterialAlertDialogBuilder(requireActivity())
+                            .setCancelable(false)
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(getString(R.string.app_name))
                             .setMessage(getString(R.string.shizuku_access_denied_message))
-                            .setNegativeButton(getString(R.string.exit), (dialogInterface, i) -> requireActivity().finish())
+                            .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> requireActivity().finish())
                             .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)).show();
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     if (!mExecutors.isShutdown()) mExecutors.shutdown();
