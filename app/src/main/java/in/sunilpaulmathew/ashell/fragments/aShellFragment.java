@@ -100,7 +100,12 @@ public class aShellFragment extends Fragment {
             popupMenu.show();
         });
 
-        mClearButton.setOnClickListener(v -> mOutput.setText(null));
+        mClearButton.setOnClickListener(v -> {
+            if (mOutput.getText() == null) return;
+            mOutput.setText(null);
+            mCommand.setHint(getString(R.string.command_hint));
+            mCommand.requestFocus();
+        });
 
         mHistoryButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(requireContext(), mCommand);
@@ -147,6 +152,15 @@ public class aShellFragment extends Fragment {
             if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
                 mResult = Utils.runCommand(finalCommand);
                 mHistory.add(finalCommand);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    mOutput.setText(mResult);
+                    if (mHistory.size() > 0 && mHistoryButton.getVisibility() != View.VISIBLE) {
+                        mHistoryButton.setVisibility(View.VISIBLE);
+                    }
+                    mCommand.setText(null);
+                    mCommand.setHint(null);
+                    mCommand.requestFocus();
+                });
             } else {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     new MaterialAlertDialogBuilder(requireActivity())
@@ -156,19 +170,10 @@ public class aShellFragment extends Fragment {
                             .setMessage(getString(R.string.shizuku_access_denied_message))
                             .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> requireActivity().finish())
                             .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)).show();
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    if (!mExecutors.isShutdown()) mExecutors.shutdown();
                 });
             }
-            new Handler(Looper.getMainLooper()).post(() -> {
-                mOutput.setText(mResult);
-                mOutput.setVisibility(View.VISIBLE);
-                mHistoryButton.setVisibility(View.VISIBLE);
-                mCommand.setText(null);
-                mCommand.requestFocus();
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                if (!mExecutors.isShutdown()) mExecutors.shutdown();
-            });
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            if (!mExecutors.isShutdown()) mExecutors.shutdown();
         });
     }
 
