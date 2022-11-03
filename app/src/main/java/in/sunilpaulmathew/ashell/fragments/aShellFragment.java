@@ -40,10 +40,9 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatImageButton mHistoryButton;
-    private MaterialTextView mOutput;
+    private MaterialTextView mOutput, mTitle;
 
     private List<String> mHistory = null;
-    private String mResult = null;
 
     @Nullable
     @Override
@@ -52,6 +51,7 @@ public class aShellFragment extends Fragment {
 
         mCommand = mRootView.findViewById(R.id.shell_command);
         mOutput = mRootView.findViewById(R.id.shell_output);
+        mTitle = mRootView.findViewById(R.id.shell_title);
         AppCompatImageButton mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
         AppCompatImageButton mSettingsButton = mRootView.findViewById(R.id.settings);
@@ -150,9 +150,12 @@ public class aShellFragment extends Fragment {
                 finalCommand = finalCommand.replace("adb -d shell ", "");
             }
             if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                mResult = Utils.runCommand(finalCommand);
+                String mResult = Utils.runCommand(finalCommand);
+                String mTitleText = "shell@" + Utils.runCommand("getprop ro.build.product")
+                        .replace("\n", "") + "# " + finalCommand;
                 mHistory.add(finalCommand);
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    mTitle.setText(mTitleText);
                     mOutput.setText(mResult);
                     if (mHistory.size() > 0 && mHistoryButton.getVisibility() != View.VISIBLE) {
                         mHistoryButton.setVisibility(View.VISIBLE);

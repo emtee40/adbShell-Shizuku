@@ -17,10 +17,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
@@ -41,7 +41,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(in.sunilpaulmathew.ashell.R.layout.activity_start);
 
-        LinearLayout mMainLayout = findViewById(R.id.layout_main);
+        LinearLayoutCompat mMainLayout = findViewById(R.id.layout_main);
         MaterialCardView mStartCard = findViewById(R.id.start_card);
         MaterialTextView mAboutText = findViewById(R.id.about_text);
 
