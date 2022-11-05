@@ -1,6 +1,7 @@
 package in.sunilpaulmathew.ashell.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
@@ -31,6 +35,9 @@ import java.util.concurrent.Executors;
 
 import in.sunilpaulmathew.ashell.BuildConfig;
 import in.sunilpaulmathew.ashell.R;
+import in.sunilpaulmathew.ashell.activities.ExamplesActivity;
+import in.sunilpaulmathew.ashell.adapters.CommandsAdapter;
+import in.sunilpaulmathew.ashell.utils.Commands;
 import in.sunilpaulmathew.ashell.utils.Utils;
 import rikka.shizuku.Shizuku;
 
@@ -42,6 +49,8 @@ public class aShellFragment extends Fragment {
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatImageButton mHistoryButton;
     private MaterialTextView mOutput, mTitle;
+
+    private CommandsAdapter mRecycleViewAdapter;
 
     private List<String> mHistory = null;
 
@@ -56,6 +65,9 @@ public class aShellFragment extends Fragment {
         AppCompatImageButton mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
         AppCompatImageButton mSettingsButton = mRootView.findViewById(R.id.settings);
+        RecyclerView mRecyclerView = mRootView.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(requireActivity(), LinearLayoutManager.VERTICAL));
 
         mCommand.requestFocus();
 
@@ -70,6 +82,25 @@ public class aShellFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 if (s.toString().endsWith("\n")) {
                     runShellCommand(requireActivity());
+                } else {
+                    if (!s.toString().isEmpty()) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            mRecycleViewAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
+                            mRecyclerView.setAdapter(mRecycleViewAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+
+                            mRecycleViewAdapter.setOnItemClickListener((command, v) -> {
+                                if (command.contains(" <")) {
+                                    mCommand.setText(command.split("<")[0]);
+                                } else {
+                                    mCommand.setText(command);
+                                }
+                                mCommand.setSelection(mCommand.getText().length());
+                            });
+                        });
+                    } else {
+                        mRecyclerView.setVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -79,7 +110,8 @@ public class aShellFragment extends Fragment {
             Menu menu = popupMenu.getMenu();
             menu.add(Menu.NONE, 0, Menu.NONE, R.string.shizuku_about);
             menu.add(Menu.NONE, 1, Menu.NONE, R.string.change_logs);
-            menu.add(Menu.NONE, 2, Menu.NONE, R.string.about);
+            menu.add(Menu.NONE, 2, Menu.NONE, R.string.examples);
+            menu.add(Menu.NONE, 3, Menu.NONE, R.string.about);
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == 0) {
                     Utils.loadShizukuWeb(requireActivity());
@@ -92,6 +124,9 @@ public class aShellFragment extends Fragment {
                             .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
                             }).show();
                 } else if (item.getItemId() == 2) {
+                    Intent examples = new Intent(requireActivity(), ExamplesActivity.class);
+                    startActivity(examples);
+                } else if (item.getItemId() == 3) {
                     new MaterialAlertDialogBuilder(requireActivity())
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
