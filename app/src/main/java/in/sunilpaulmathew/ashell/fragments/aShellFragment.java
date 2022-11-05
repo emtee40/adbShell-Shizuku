@@ -77,10 +77,13 @@ public class aShellFragment extends Fragment {
         mSettingsButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(requireContext(), mSettingsButton);
             Menu menu = popupMenu.getMenu();
-            menu.add(Menu.NONE, 0, Menu.NONE, R.string.change_logs);
-            menu.add(Menu.NONE, 1, Menu.NONE, R.string.about);
+            menu.add(Menu.NONE, 0, Menu.NONE, R.string.shizuku_about);
+            menu.add(Menu.NONE, 1, Menu.NONE, R.string.change_logs);
+            menu.add(Menu.NONE, 2, Menu.NONE, R.string.about);
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == 0) {
+                    Utils.loadShizukuWeb(requireActivity());
+                } else if (item.getItemId() == 1) {
                     new MaterialAlertDialogBuilder(requireActivity())
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(getString(R.string.change_logs))
@@ -88,11 +91,11 @@ public class aShellFragment extends Fragment {
                                     R.string.app_name) + " " + BuildConfig.VERSION_NAME))
                             .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
                             }).show();
-                } else if (item.getItemId() == 1) {
+                } else if (item.getItemId() == 2) {
                     new MaterialAlertDialogBuilder(requireActivity())
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
-                            .setMessage(getString(R.string.app_summary))
+                            .setMessage("Copyright: © 2022–2023, sunilpaulmathew\n\nCredits:\nRikkaApps: Shizuku")
                             .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
                             }).show();
                 }

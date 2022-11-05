@@ -1,5 +1,9 @@
 package in.sunilpaulmathew.ashell.utils;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -45,6 +49,15 @@ public class Utils {
 
     public static void destroyProcess() {
         if (mProcess != null) mProcess.destroy();
+    }
+
+    public static void loadShizukuWeb(Context context) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://shizuku.rikka.app/"));
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException ignored) {
+        }
     }
 
 }

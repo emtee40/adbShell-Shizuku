@@ -10,10 +10,8 @@ package in.sunilpaulmathew.ashell.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -26,6 +24,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 
 import in.sunilpaulmathew.ashell.R;
+import in.sunilpaulmathew.ashell.utils.Utils;
 import rikka.shizuku.Shizuku;
 
 /*
@@ -65,14 +64,7 @@ public class StartActivity extends AppCompatActivity {
             loadUI(this);
         });
 
-        mAboutText.setOnClickListener(v -> {
-            try {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("https://shizuku.rikka.app/"));
-                startActivity(i);
-            } catch (ActivityNotFoundException ignored) {
-            }
-        });
+        mAboutText.setOnClickListener(v -> Utils.loadShizukuWeb(this));
     }
 
     private static void loadUI(Activity activity) {

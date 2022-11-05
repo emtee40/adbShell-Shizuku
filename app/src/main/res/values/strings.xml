@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">aShell</string>
 
     <string name="about">About</string>
-    <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.\n\nCopyright: © 2022–2023, sunilpaulmathew\n\nCredits:\nRikkaApps: Shizuku</string>
+    <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.</string>
     <string name="cancel">Cancel</string>
     <string name="change_logs">Change-logs</string>
     <string name="change_logs_summary" translatable="false">%s\n - Initial release</string>
@@ -14,6 +14,7 @@
     <string name="press_back">Press back again to exit</string>
     <string name="request_permission">Request Permission</string>
     <string name="start">Start</string>
+    <string name="shizuku_about">About Shizuku</string>
     <string name="shizuku_access_denied_message">Access to Shizuku service is denied for aShell. aShell won\'t work without a proper Shizuku environment.</string>
     <string name="shizuku_unavailable_message">Shizuku is not installed or not properly configured on your device. aShell won\'t work without a proper Shizuku environment. Click here to learn more about Shizuku.</string>
     <string name="yes">Yes</string>
