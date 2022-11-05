@@ -5,7 +5,7 @@
     <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.</string>
     <string name="cancel">Cancel</string>
     <string name="change_logs">Change-logs</string>
-    <string name="change_logs_summary" translatable="false">%s\n - Initial release</string>
+    <string name="change_logs_summary" translatable="false">%s\n - Beautify output view.\n - Added real-time command suggestions.\n - Added options menu.\n - Added examples page.</string>
     <string name="clear_all_message">Clear everything on this screen?</string>
     <string name="command_hint">Input adb command here</string>
     <string name="command_title">aShell Command Box</string>
