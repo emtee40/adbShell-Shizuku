@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -101,10 +102,21 @@ public class aShellFragment extends Fragment {
         });
 
         mClearButton.setOnClickListener(v -> {
-            if (mOutput.getText() == null) return;
-            mOutput.setText(null);
-            mCommand.setHint(getString(R.string.command_hint));
-            mCommand.requestFocus();
+            if (mOutput.getText() == null || mOutput.getText().toString().isEmpty()) return;
+            if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean("clearAllMessage", true)) {
+                new MaterialAlertDialogBuilder(requireActivity())
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setTitle(getString(R.string.app_name))
+                        .setMessage(getString(R.string.clear_all_message))
+                        .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                        })
+                        .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
+                            PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean("clearAllMessage", false).apply();
+                            clearAll();
+                        }).show();
+            } else {
+                clearAll();
+            }
         });
 
         mHistoryButton.setOnClickListener(v -> {
@@ -132,6 +144,13 @@ public class aShellFragment extends Fragment {
         List<String> mRecentCommands = new ArrayList<>(mHistory);
         Collections.reverse(mRecentCommands);
         return mRecentCommands;
+    }
+
+    private void clearAll() {
+        mOutput.setText(null);
+        mTitle.setText(null);
+        mCommand.setHint(getString(R.string.command_hint));
+        mCommand.requestFocus();
     }
 
     private void runShellCommand(Activity activity) {
@@ -165,15 +184,15 @@ public class aShellFragment extends Fragment {
                     mCommand.requestFocus();
                 });
             } else {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    new MaterialAlertDialogBuilder(requireActivity())
-                            .setCancelable(false)
-                            .setIcon(R.mipmap.ic_launcher)
-                            .setTitle(getString(R.string.app_name))
-                            .setMessage(getString(R.string.shizuku_access_denied_message))
-                            .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> requireActivity().finish())
-                            .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)).show();
-                });
+                new Handler(Looper.getMainLooper()).post(() ->
+                        new MaterialAlertDialogBuilder(requireActivity())
+                                .setCancelable(false)
+                                .setIcon(R.mipmap.ic_launcher)
+                                .setTitle(getString(R.string.app_name))
+                                .setMessage(getString(R.string.shizuku_access_denied_message))
+                                .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> requireActivity().finish())
+                                .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)
+                                ).show());
             }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (!mExecutors.isShutdown()) mExecutors.shutdown();
