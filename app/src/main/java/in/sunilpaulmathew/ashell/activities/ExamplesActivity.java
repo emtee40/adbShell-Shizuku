@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import in.sunilpaulmathew.ashell.R;
-import in.sunilpaulmathew.ashell.adapters.CommandsAdapter;
+import in.sunilpaulmathew.ashell.adapters.ExamplesAdapter;
 import in.sunilpaulmathew.ashell.utils.Commands;
 
 /*
@@ -25,7 +25,7 @@ public class ExamplesActivity extends AppCompatActivity {
         RecyclerView mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        CommandsAdapter mRecycleViewAdapter = new CommandsAdapter(Commands.getCommand(""));
+        ExamplesAdapter mRecycleViewAdapter = new ExamplesAdapter(Commands.commandList());
         mRecyclerView.setAdapter(mRecycleViewAdapter);
         mRecyclerView.setVisibility(View.VISIBLE);
 
