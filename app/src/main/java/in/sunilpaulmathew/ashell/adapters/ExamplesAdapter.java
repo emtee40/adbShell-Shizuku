@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
@@ -20,8 +21,6 @@ import in.sunilpaulmathew.ashell.utils.CommandItems;
 public class ExamplesAdapter extends RecyclerView.Adapter<ExamplesAdapter.ViewHolder> {
 
     private final List<CommandItems> data;
-
-    private static ClickListener mClickListener;
 
     public ExamplesAdapter(List<CommandItems> data) {
         this.data = data;
@@ -47,7 +46,7 @@ public class ExamplesAdapter extends RecyclerView.Adapter<ExamplesAdapter.ViewHo
         return this.data.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final MaterialTextView mTitle, mSummary;
 
         public ViewHolder(View view) {
@@ -59,16 +58,16 @@ public class ExamplesAdapter extends RecyclerView.Adapter<ExamplesAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-            mClickListener.onItemClick(this.mTitle.getText().toString(), view);
+            if (data.get(getAdapterPosition()).getExample() != null) {
+                LayoutInflater mLayoutInflater = LayoutInflater.from(view.getContext());
+                View exampleLayout = mLayoutInflater.inflate(R.layout.layout_example_alert, null);
+                MaterialTextView mExample = exampleLayout.findViewById(R.id.example);
+                mExample.setText(data.get(getAdapterPosition()).getExample());
+                new MaterialAlertDialogBuilder(view.getContext())
+                        .setView(exampleLayout)
+                        .show();
+            }
         }
-    }
-
-    public void setOnItemClickListener(ClickListener clickListener) {
-        ExamplesAdapter.mClickListener = clickListener;
-    }
-
-    public interface ClickListener {
-        void onItemClick(String command, View v);
     }
 
 }

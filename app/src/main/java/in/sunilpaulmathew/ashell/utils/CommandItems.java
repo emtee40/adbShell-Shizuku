@@ -7,11 +7,12 @@ import java.io.Serializable;
  */
 public class CommandItems implements Serializable {
 
-    private final String mTitle, mSummary;
+    private final String mTitle, mSummary, mExample;
 
-    public CommandItems(String title, String summary) {
+    public CommandItems(String title, String summary, String example) {
         this.mTitle = title;
         this.mSummary = summary;
+        this.mExample = example;
     }
 
     public String getTitle() {
@@ -20,6 +21,10 @@ public class CommandItems implements Serializable {
 
     public String getSummary() {
         return mSummary;
+    }
+
+    public String getExample() {
+        return mExample;
     }
 
 }

@@ -28,11 +28,6 @@ public class ExamplesActivity extends AppCompatActivity {
         ExamplesAdapter mRecycleViewAdapter = new ExamplesAdapter(Commands.commandList());
         mRecyclerView.setAdapter(mRecycleViewAdapter);
         mRecyclerView.setVisibility(View.VISIBLE);
-
-        mRecycleViewAdapter.setOnItemClickListener((command, v) -> {
-            // To-do
-        });
-
     }
 
 }
