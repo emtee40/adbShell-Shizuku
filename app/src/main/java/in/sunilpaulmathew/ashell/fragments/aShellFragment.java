@@ -80,7 +80,10 @@ public class aShellFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().endsWith("\n")) {
+                if (s.toString().contains("\n")) {
+                    if (!s.toString().endsWith("\n")) {
+                        mCommand.setText(s.toString().replace("\n", ""));
+                    }
                     runShellCommand(requireActivity());
                 } else {
                     if (!s.toString().isEmpty()) {
