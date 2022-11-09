@@ -1,10 +1,11 @@
 package in.sunilpaulmathew.ashell.activities;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +25,9 @@ public class ExamplesActivity extends AppCompatActivity {
 
         RecyclerView mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        GridLayoutManager mLayoutManager = new GridLayoutManager(this, getResources().getConfiguration()
+                .orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         ExamplesAdapter mRecycleViewAdapter = new ExamplesAdapter(Commands.commandList());
         mRecyclerView.setAdapter(mRecycleViewAdapter);
         mRecyclerView.setVisibility(View.VISIBLE);
