@@ -188,7 +188,13 @@ public class aShellFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult, s.toString());
+                List<String> mResultSorted = new ArrayList<>();
+                for (String strings : mResult) {
+                    if (strings.contains(s.toString())) {
+                        mResultSorted.add(strings);
+                    }
+                }
+                ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResultSorted);
                 mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
             }
         });
@@ -326,7 +332,7 @@ public class aShellFragment extends Fragment {
                     Thread.sleep(250);
                     requireActivity().runOnUiThread(() -> {
                         if (mResult != null && mResult.size() > 0 && !mResult.get(mResult.size() - 1).equals("aShell: Finish")) {
-                            ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult, null);
+                            ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult);
                             mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
                         }
                     });

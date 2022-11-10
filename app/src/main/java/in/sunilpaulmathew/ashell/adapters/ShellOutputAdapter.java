@@ -19,11 +19,9 @@ import in.sunilpaulmathew.ashell.R;
 public class ShellOutputAdapter extends RecyclerView.Adapter<ShellOutputAdapter.ViewHolder> {
 
     private final List<String> data;
-    private final String searchWord;
 
-    public ShellOutputAdapter(List<String> data, String searchWord) {
+    public ShellOutputAdapter(List<String> data) {
         this.data = data;
-        this.searchWord = searchWord;
     }
 
     @NonNull
@@ -36,11 +34,7 @@ public class ShellOutputAdapter extends RecyclerView.Adapter<ShellOutputAdapter.
     @Override
     public void onBindViewHolder(@NonNull ShellOutputAdapter.ViewHolder holder, int position) {
         if (!this.data.get(position).equals("aShell: Finish")) {
-            if (searchWord == null) {
-                holder.mOutput.setText(this.data.get(position));
-            } else if (this.data.get(position).contains(searchWord)) {
-                holder.mOutput.setText(this.data.get(position));
-            }
+            holder.mOutput.setText(this.data.get(position));
         }
     }
 
