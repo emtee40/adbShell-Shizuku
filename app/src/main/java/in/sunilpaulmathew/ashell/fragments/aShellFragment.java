@@ -225,6 +225,9 @@ public class aShellFragment extends Fragment {
             public void handleOnBackPressed() {
                 if (mSearchWord.getVisibility() == View.VISIBLE) {
                     hideSearchBar();
+                } else if (mCommand != null) {
+                    mCommand.setText(null);
+                    mCommand.setHint(null);
                 } else if (mExit) {
                     mExit = false;
                     Utils.destroyProcess();

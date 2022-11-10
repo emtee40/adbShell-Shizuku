@@ -118,21 +118,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/ColorBlue"
-        android:layout_marginBottom="1dp"
         android:layout_marginStart="15dp"
         android:textIsSelectable="false"
         android:layout_marginEnd="15dp"
         android:textStyle="bold|italic"
         android:layout_gravity="start"
-        android:layout_marginTop="5dp"
         android:textSize="17sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_output"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginTop="1dp" />
+        android:layout_marginEnd="15dp" />
 </androidx.appcompat.widget.LinearLayoutCompat>
