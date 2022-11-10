@@ -22,7 +22,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -97,7 +96,6 @@ public class aShellFragment extends Fragment {
                         new Handler(Looper.getMainLooper()).post(() -> {
                             CommandsAdapter mCommandsAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
                             mRecyclerViewCommands.setLayoutManager(new LinearLayoutManager(requireActivity()));
-                            mRecyclerViewCommands.addItemDecoration(new DividerItemDecoration(requireActivity(), LinearLayoutManager.VERTICAL));
                             mRecyclerViewCommands.setAdapter(mCommandsAdapter);
                             mRecyclerViewCommands.setVisibility(View.VISIBLE);
                             mCommandsAdapter.setOnItemClickListener((command, v) -> {
@@ -175,6 +173,8 @@ public class aShellFragment extends Fragment {
                 mClearButton.setVisibility(View.GONE);
                 mSettingsButton.setVisibility(View.GONE);
                 mSearchButton.setVisibility(View.GONE);
+                mCommand.setText(null);
+                mCommand.setHint(null);
                 mSearchWord.requestFocus();
             }
         });
