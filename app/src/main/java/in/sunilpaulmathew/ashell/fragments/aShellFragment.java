@@ -259,7 +259,7 @@ public class aShellFragment extends Fragment {
     }
 
     private void initializeShell(Activity activity) {
-        if (mCommand.getText() == null || mCommand.getText().toString().isEmpty()) {
+        if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
             return;
         }
         runShellCommand(mCommand.getText().toString().replace("\n", ""), activity);
@@ -287,7 +287,6 @@ public class aShellFragment extends Fragment {
             if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
                 String mTitleText = "shell@" + Utils.getDeviceName() + "# " + finalCommand;
                 mResult = Utils.runCommand(finalCommand);
-                mHistory.add(finalCommand);
                 try {
                     TimeUnit.MILLISECONDS.sleep(250);
                 } catch (InterruptedException ignored) {}
@@ -300,6 +299,7 @@ public class aShellFragment extends Fragment {
                         mSearchButton.setVisibility(View.VISIBLE);
                     }
                     mCommand.requestFocus();
+                    mHistory.add(finalCommand);
                     mResult.add("aShell: Finish");
                 });
             } else {
