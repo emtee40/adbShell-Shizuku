@@ -15,8 +15,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
@@ -32,11 +34,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import in.sunilpaulmathew.ashell.BuildConfig;
 import in.sunilpaulmathew.ashell.R;
 import in.sunilpaulmathew.ashell.activities.ExamplesActivity;
 import in.sunilpaulmathew.ashell.adapters.CommandsAdapter;
+import in.sunilpaulmathew.ashell.adapters.ShellOutputAdapter;
 import in.sunilpaulmathew.ashell.utils.Commands;
 import in.sunilpaulmathew.ashell.utils.Utils;
 import rikka.shizuku.Shizuku;
@@ -47,12 +51,14 @@ import rikka.shizuku.Shizuku;
 public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
-    private AppCompatImageButton mHistoryButton;
-    private MaterialTextView mOutput, mTitle;
-
-    private CommandsAdapter mRecycleViewAdapter;
-
-    private List<String> mHistory = null;
+    private AppCompatEditText mSearchWord;
+    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton;
+    private MaterialTextView mTitle;
+    private RecyclerView mRecyclerViewOutput;
+    private Thread mRefreshThread = null;
+    private boolean mExit;
+    private final Handler mHandler = new Handler();
+    private List<String> mHistory = null, mResult = null;
 
     @Nullable
     @Override
@@ -60,14 +66,14 @@ public class aShellFragment extends Fragment {
         View mRootView = inflater.inflate(R.layout.fragment_ashell, container, false);
 
         mCommand = mRootView.findViewById(R.id.shell_command);
-        mOutput = mRootView.findViewById(R.id.shell_output);
         mTitle = mRootView.findViewById(R.id.shell_title);
-        AppCompatImageButton mClearButton = mRootView.findViewById(R.id.clear);
+        mSearchWord = mRootView.findViewById(R.id.search_word);
+        mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
-        AppCompatImageButton mSettingsButton = mRootView.findViewById(R.id.settings);
-        RecyclerView mRecyclerView = mRootView.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(requireActivity(), LinearLayoutManager.VERTICAL));
+        mSettingsButton = mRootView.findViewById(R.id.settings);
+        mSearchButton = mRootView.findViewById(R.id.search);
+        mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
+        mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
         mCommand.requestFocus();
 
@@ -84,15 +90,17 @@ public class aShellFragment extends Fragment {
                     if (!s.toString().endsWith("\n")) {
                         mCommand.setText(s.toString().replace("\n", ""));
                     }
-                    runShellCommand(requireActivity());
+                    initializeShell(requireActivity());
                 } else {
+                    RecyclerView mRecyclerViewCommands = mRootView.findViewById(R.id.recycler_view_commands);
                     if (!s.toString().isEmpty()) {
                         new Handler(Looper.getMainLooper()).post(() -> {
-                            mRecycleViewAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
-                            mRecyclerView.setAdapter(mRecycleViewAdapter);
-                            mRecyclerView.setVisibility(View.VISIBLE);
-
-                            mRecycleViewAdapter.setOnItemClickListener((command, v) -> {
+                            CommandsAdapter mCommandsAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
+                            mRecyclerViewCommands.setLayoutManager(new LinearLayoutManager(requireActivity()));
+                            mRecyclerViewCommands.addItemDecoration(new DividerItemDecoration(requireActivity(), LinearLayoutManager.VERTICAL));
+                            mRecyclerViewCommands.setAdapter(mCommandsAdapter);
+                            mRecyclerViewCommands.setVisibility(View.VISIBLE);
+                            mCommandsAdapter.setOnItemClickListener((command, v) -> {
                                 if (command.contains(" <")) {
                                     mCommand.setText(command.split("<")[0]);
                                 } else {
@@ -102,7 +110,7 @@ public class aShellFragment extends Fragment {
                             });
                         });
                     } else {
-                        mRecyclerView.setVisibility(View.GONE);
+                        mRecyclerViewCommands.setVisibility(View.GONE);
                     }
                 }
             }
@@ -143,7 +151,7 @@ public class aShellFragment extends Fragment {
         });
 
         mClearButton.setOnClickListener(v -> {
-            if (mOutput.getText() == null || mOutput.getText().toString().isEmpty()) return;
+            if (mResult == null) return;
             if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean("clearAllMessage", true)) {
                 new MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.mipmap.ic_launcher)
@@ -157,6 +165,31 @@ public class aShellFragment extends Fragment {
                         }).show();
             } else {
                 clearAll();
+            }
+        });
+
+        mSearchButton.setOnClickListener(v -> {
+            if (mSearchWord.getVisibility() == View.GONE) {
+                mSearchWord.setVisibility(View.VISIBLE);
+                mHistoryButton.setVisibility(View.GONE);
+                mClearButton.setVisibility(View.GONE);
+                mSettingsButton.setVisibility(View.GONE);
+                mSearchButton.setVisibility(View.GONE);
+                mSearchWord.requestFocus();
+            }
+        });
+
+        mSearchWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult, s.toString());
+                mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
             }
         });
 
@@ -178,6 +211,26 @@ public class aShellFragment extends Fragment {
             popupMenu.show();
         });
 
+        mRefreshThread = new RefreshThread();
+        mRefreshThread.start();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mSearchWord.getVisibility() == View.VISIBLE) {
+                    hideSearchBar();
+                } else if (mExit) {
+                    mExit = false;
+                    Utils.destroyProcess();
+                    requireActivity().finish();
+                } else {
+                    Utils.snackBar(mRootView, getString(R.string.press_back)).show();
+                    mExit = true;
+                    mHandler.postDelayed(() -> mExit = false, 2000);
+                }
+            }
+        });
+
         return mRootView;
     }
 
@@ -186,43 +239,68 @@ public class aShellFragment extends Fragment {
         Collections.reverse(mRecentCommands);
         return mRecentCommands;
     }
+    private void hideSearchBar() {
+        mSearchWord.setText(null);
+        mCommand.requestFocus();
+        mSearchWord.setVisibility(View.GONE);
+        mSettingsButton.setVisibility(View.VISIBLE);
+        mHistoryButton.setVisibility(View.VISIBLE);
+        mClearButton.setVisibility(View.VISIBLE);
+        mSearchButton.setVisibility(View.VISIBLE);
+    }
 
     private void clearAll() {
-        mOutput.setText(null);
+        mResult = null;
+        mRecyclerViewOutput.setAdapter(null);
         mTitle.setText(null);
+        mSearchButton.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
         mCommand.requestFocus();
     }
 
-    private void runShellCommand(Activity activity) {
+    private void initializeShell(Activity activity) {
         if (mCommand.getText() == null || mCommand.getText().toString().isEmpty()) {
             return;
         }
+        runShellCommand(mCommand.getText().toString().replace("\n", ""), activity);
+    }
+
+    private void runShellCommand(String command, Activity activity) {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         if (mHistory == null) mHistory = new ArrayList<>();
+        mCommand.setText(null);
+        mCommand.setHint(null);
+        if (mSearchWord.getVisibility() == View.VISIBLE) {
+            hideSearchBar();
+        }
 
         ExecutorService mExecutors = Executors.newSingleThreadExecutor();
         mExecutors.execute(() -> {
-            String finalCommand = mCommand.getText().toString().replace("\n", "");
-            if (finalCommand.startsWith("adb shell ")) {
-                finalCommand = finalCommand.replace("adb shell ", "");
-            } else if (finalCommand.startsWith("adb -d shell ")) {
-                finalCommand = finalCommand.replace("adb -d shell ", "");
+            String finalCommand;
+            if (command.startsWith("adb shell ")) {
+                finalCommand = command.replace("adb shell ", "");
+            } else if (command.startsWith("adb -d shell ")) {
+                finalCommand = command.replace("adb -d shell ", "");
+            } else {
+                finalCommand = command;
             }
             if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                String mResult = Utils.runCommand(finalCommand);
-                String mTitleText = "shell@" + Utils.runCommand("getprop ro.build.product")
-                        .replace("\n", "") + "# " + finalCommand;
+                String mTitleText = "shell@" + Utils.getDeviceName() + "# " + finalCommand;
+                mResult = Utils.runCommand(finalCommand);
                 mHistory.add(finalCommand);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(250);
+                } catch (InterruptedException ignored) {}
                 new Handler(Looper.getMainLooper()).post(() -> {
                     mTitle.setText(mTitleText);
-                    mOutput.setText(mResult);
                     if (mHistory.size() > 0 && mHistoryButton.getVisibility() != View.VISIBLE) {
                         mHistoryButton.setVisibility(View.VISIBLE);
                     }
-                    mCommand.setText(null);
-                    mCommand.setHint(null);
+                    if (mResult.size() > 0) {
+                        mSearchButton.setVisibility(View.VISIBLE);
+                    }
                     mCommand.requestFocus();
+                    mResult.add("aShell: Finish");
                 });
             } else {
                 new Handler(Looper.getMainLooper()).post(() ->
@@ -238,6 +316,34 @@ public class aShellFragment extends Fragment {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (!mExecutors.isShutdown()) mExecutors.shutdown();
         });
+    }
+
+    private class RefreshThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                while (!isInterrupted()) {
+                    Thread.sleep(250);
+                    requireActivity().runOnUiThread(() -> {
+                        if (mResult != null && mResult.size() > 0 && !mResult.get(mResult.size() - 1).equals("aShell: Finish")) {
+                            ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult, null);
+                            mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+                        }
+                    });
+                }
+            } catch (InterruptedException ignored) {}
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mRefreshThread != null) {
+            try {
+                mRefreshThread.interrupt();
+            } catch(Exception ignored) {}
+        }
+        Utils.destroyProcess();
     }
 
 }

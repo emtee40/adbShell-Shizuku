@@ -4,12 +4,15 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import in.sunilpaulmathew.ashell.R;
 import rikka.shizuku.Shizuku;
@@ -27,24 +30,28 @@ public class Utils {
         return snackbar;
     }
 
-    public static String runCommand(String command) {
-        StringBuilder output = new StringBuilder();
+    public static List<String> runCommand(String command) {
+        List<String> output = new ArrayList<>();
         try {
             mProcess = Shizuku.newProcess(new String[] {"sh", "-c", command}, null, null);
             BufferedReader mInput = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
             BufferedReader mError = new BufferedReader(new InputStreamReader(mProcess.getErrorStream()));
             String line;
             while ((line = mInput.readLine()) != null) {
-                output.append(line).append("\n");
+                output.add(line);
             }
             while ((line = mError.readLine()) != null) {
-                output.append(line).append("\n");
+                output.add(line);
             }
             mProcess.waitFor();
         } catch (Exception e) {
-            output.append(e.getMessage()).append("\n");
+            output.add(e.getMessage());
         }
-        return output.toString();
+        return output;
+    }
+
+    public static String getDeviceName() {
+        return Build.MODEL;
     }
 
     public static void destroyProcess() {

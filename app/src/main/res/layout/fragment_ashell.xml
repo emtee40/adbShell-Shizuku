@@ -5,17 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" >
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <FrameLayout
         android:layout_height="50dp"
         android:layout_width="match_parent"
-        android:gravity="top|center_vertical"
+        android:gravity="center"
         android:background="@color/colorBlack"
         android:orientation="horizontal" >
 
         <com.google.android.material.textview.MaterialTextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="start"
             android:gravity="center_vertical"
             android:textColor="@color/ColorBlue"
@@ -24,37 +23,66 @@
             android:textSize="23sp"
             android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/history"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/search_word"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_history"
-            android:tint="@color/ColorBlue"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@null"
-            android:visibility="gone" />
+            android:textColor="@color/ColorBlue"
+            android:layout_gravity="center|start"
+            android:layout_marginStart="100dp"
+            android:layout_marginEnd="25dp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            android:gravity="center" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/clear"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_refresh"
-            android:tint="@color/ColorBlue"
-            android:layout_margin="5dp"
-            android:background="@null" />
+            android:layout_gravity="end">
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_dots"
-            android:background="@null"
-            android:tint="@color/ColorBlue" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_history"
+                android:tint="@color/ColorBlue"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@null"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_gravity="end|center_vertical"
+                android:src="@drawable/ic_search"
+                android:tint="@color/ColorBlue"
+                android:background="@null"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:src="@drawable/ic_refresh"
+                android:tint="@color/ColorBlue"
+                android:layout_margin="5dp"
+                android:background="@null" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_gravity="end|center_vertical"
+                android:src="@drawable/ic_dots"
+                android:background="@null"
+                android:tint="@color/ColorBlue" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </FrameLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -80,45 +108,31 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recycler_view_commands"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shell_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/ColorBlue"
+        android:layout_marginBottom="1dp"
+        android:layout_marginStart="15dp"
+        android:textIsSelectable="false"
+        android:layout_marginEnd="15dp"
+        android:textStyle="bold|italic"
+        android:layout_gravity="start"
+        android:layout_marginTop="5dp"
+        android:textSize="17sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_output"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:visibility="gone" />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical" >
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical" >
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/shell_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/ColorBlue"
-                android:textIsSelectable="false"
-                android:textStyle="bold|italic"
-                android:layout_gravity="start"
-                android:textSize="17sp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/shell_output"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                android:layout_gravity="start"
-                android:textStyle="bold"
-                android:textSize="15sp" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.core.widget.NestedScrollView>
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="1dp" />
 </androidx.appcompat.widget.LinearLayoutCompat>
