@@ -194,8 +194,7 @@ public class aShellFragment extends Fragment {
                         mResultSorted.add(strings);
                     }
                 }
-                ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResultSorted);
-                mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+                updateUI(mResultSorted);
             }
         });
 
@@ -248,15 +247,6 @@ public class aShellFragment extends Fragment {
         Collections.reverse(mRecentCommands);
         return mRecentCommands;
     }
-    private void hideSearchBar() {
-        mSearchWord.setText(null);
-        mCommand.requestFocus();
-        mSearchWord.setVisibility(View.GONE);
-        mSettingsButton.setVisibility(View.VISIBLE);
-        mHistoryButton.setVisibility(View.VISIBLE);
-        mClearButton.setVisibility(View.VISIBLE);
-        mSearchButton.setVisibility(View.VISIBLE);
-    }
 
     private void clearAll() {
         mResult = null;
@@ -265,6 +255,16 @@ public class aShellFragment extends Fragment {
         mSearchButton.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
         mCommand.requestFocus();
+    }
+
+    private void hideSearchBar() {
+        mSearchWord.setText(null);
+        mCommand.requestFocus();
+        mSearchWord.setVisibility(View.GONE);
+        mSettingsButton.setVisibility(View.VISIBLE);
+        mHistoryButton.setVisibility(View.VISIBLE);
+        mClearButton.setVisibility(View.VISIBLE);
+        mSearchButton.setVisibility(View.VISIBLE);
     }
 
     private void initializeShell(Activity activity) {
@@ -310,6 +310,7 @@ public class aShellFragment extends Fragment {
                     mCommand.requestFocus();
                     mHistory.add(finalCommand);
                     mResult.add("aShell: Finish");
+                    updateUI(mResult);
                 });
             } else {
                 new Handler(Looper.getMainLooper()).post(() ->
@@ -327,6 +328,11 @@ public class aShellFragment extends Fragment {
         });
     }
 
+    private void updateUI(List<String> data) {
+        ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(data);
+        mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+    }
+
     private class RefreshThread extends Thread {
         @Override
         public void run() {
@@ -335,8 +341,7 @@ public class aShellFragment extends Fragment {
                     Thread.sleep(250);
                     requireActivity().runOnUiThread(() -> {
                         if (mResult != null && mResult.size() > 0 && !mResult.get(mResult.size() - 1).equals("aShell: Finish")) {
-                            ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mResult);
-                            mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+                            updateUI(mResult);
                         }
                     });
                 }
