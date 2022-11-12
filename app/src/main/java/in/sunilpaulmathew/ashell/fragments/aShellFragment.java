@@ -190,7 +190,7 @@ public class aShellFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 List<String> mResultSorted = new ArrayList<>();
                 for (String strings : mResult) {
-                    if (strings.contains(s.toString())) {
+                    if (strings.toLowerCase().contains(s.toString().toLowerCase())) {
                         mResultSorted.add(strings);
                     }
                 }
