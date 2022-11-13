@@ -345,6 +345,7 @@ public class aShellFragment extends Fragment {
                     if (mResult != null && mResult.size() > 0) {
                         mSearchButton.setVisibility(View.VISIBLE);
                         mClearButton.setVisibility(View.VISIBLE);
+                        mResult.add("<i></i>");
                         mResult.add("aShell: Finish");
                     }
                     mCommand.requestFocus();
