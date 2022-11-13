@@ -19,7 +19,7 @@
             android:layout_weight="1"
             android:layout_gravity="start"
             android:gravity="center_vertical"
-            android:textColor="@color/ColorBlue"
+            android:textColor="@color/colorBlue"
             android:text="@string/examples"
             android:padding="10dp"
             android:textSize="23sp"

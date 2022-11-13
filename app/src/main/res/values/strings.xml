@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">aShell</string>
 
     <string name="about">About</string>
+    <string name="app_busy_message">aShell is busy. Please wait…</string>
     <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.</string>
     <string name="cancel">Cancel</string>
     <string name="change_logs">Change-logs</string>
@@ -12,6 +13,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="examples">Examples</string>
     <string name="press_back">Press back again to exit</string>
+    <string name="process_destroy_message">aShell is still working. Do you want to stop the current process?</string>
     <string name="quit">Quit</string>
     <string name="request_permission">Request Permission</string>
     <string name="start">Start</string>

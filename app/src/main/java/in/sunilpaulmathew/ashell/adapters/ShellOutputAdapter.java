@@ -1,5 +1,6 @@
 package in.sunilpaulmathew.ashell.adapters;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +34,7 @@ public class ShellOutputAdapter extends RecyclerView.Adapter<ShellOutputAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ShellOutputAdapter.ViewHolder holder, int position) {
-        if (!this.data.get(position).equals("aShell: Finish")) {
-            holder.mOutput.setText(this.data.get(position));
-        }
+        holder.mOutput.setText(Html.fromHtml(this.data.get(position), Html.FROM_HTML_MODE_LEGACY));
     }
 
     @Override

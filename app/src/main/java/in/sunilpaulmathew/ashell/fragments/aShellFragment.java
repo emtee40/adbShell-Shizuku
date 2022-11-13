@@ -26,10 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +41,7 @@ import in.sunilpaulmathew.ashell.activities.ExamplesActivity;
 import in.sunilpaulmathew.ashell.adapters.CommandsAdapter;
 import in.sunilpaulmathew.ashell.adapters.ShellOutputAdapter;
 import in.sunilpaulmathew.ashell.utils.Commands;
+import in.sunilpaulmathew.ashell.utils.ShizukuShell;
 import in.sunilpaulmathew.ashell.utils.Utils;
 import rikka.shizuku.Shizuku;
 
@@ -52,11 +53,12 @@ public class aShellFragment extends Fragment {
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
     private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton;
-    private MaterialTextView mTitle;
     private RecyclerView mRecyclerViewOutput;
+    private ShizukuShell mShizukuShell = null;
     private Thread mRefreshThread = null;
     private boolean mExit;
     private final Handler mHandler = new Handler();
+    private int mPosition = 1;
     private List<String> mHistory = null, mResult = null;
 
     @Nullable
@@ -65,7 +67,6 @@ public class aShellFragment extends Fragment {
         View mRootView = inflater.inflate(R.layout.fragment_ashell, container, false);
 
         mCommand = mRootView.findViewById(R.id.shell_command);
-        mTitle = mRootView.findViewById(R.id.shell_title);
         mSearchWord = mRootView.findViewById(R.id.search_word);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
@@ -115,6 +116,10 @@ public class aShellFragment extends Fragment {
         });
 
         mSettingsButton.setOnClickListener(v -> {
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
+                return;
+            }
             PopupMenu popupMenu = new PopupMenu(requireContext(), mSettingsButton);
             Menu menu = popupMenu.getMenu();
             menu.add(Menu.NONE, 0, Menu.NONE, R.string.shizuku_about);
@@ -150,6 +155,10 @@ public class aShellFragment extends Fragment {
 
         mClearButton.setOnClickListener(v -> {
             if (mResult == null) return;
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
+                return;
+            }
             if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean("clearAllMessage", true)) {
                 new MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.mipmap.ic_launcher)
@@ -167,6 +176,10 @@ public class aShellFragment extends Fragment {
         });
 
         mSearchButton.setOnClickListener(v -> {
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
+                return;
+            }
             if (mSearchWord.getVisibility() == View.GONE) {
                 mSearchWord.setVisibility(View.VISIBLE);
                 mHistoryButton.setVisibility(View.GONE);
@@ -188,13 +201,17 @@ public class aShellFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                List<String> mResultSorted = new ArrayList<>();
-                for (String strings : mResult) {
-                    if (strings.toLowerCase().contains(s.toString().toLowerCase())) {
-                        mResultSorted.add(strings);
+                if (s == null || s.toString().trim().isEmpty()) {
+                    updateUI(mResult);
+                } else {
+                    List<String> mResultSorted = new ArrayList<>();
+                    for (int i = mPosition; i < mResult.size(); i++) {
+                        if (mResult.get(i).toLowerCase().contains(s.toString().toLowerCase())) {
+                            mResultSorted.add(mResult.get(i));
+                        }
                     }
+                    updateUI(mResultSorted);
                 }
-                updateUI(mResultSorted);
             }
         });
 
@@ -224,12 +241,18 @@ public class aShellFragment extends Fragment {
             public void handleOnBackPressed() {
                 if (mSearchWord.getVisibility() == View.VISIBLE) {
                     hideSearchBar();
-                } else if (mCommand != null) {
-                    mCommand.setText(null);
-                    mCommand.setHint(null);
+                } else if (mShizukuShell.isBusy()) {
+                    new MaterialAlertDialogBuilder(requireActivity())
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle(getString(R.string.app_name))
+                            .setMessage(getString(R.string.process_destroy_message))
+                            .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                            })
+                            .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> mShizukuShell.destroy()
+                            ).show();
                 } else if (mExit) {
                     mExit = false;
-                    Utils.destroyProcess();
                     requireActivity().finish();
                 } else {
                     Utils.snackBar(mRootView, getString(R.string.press_back)).show();
@@ -249,9 +272,9 @@ public class aShellFragment extends Fragment {
     }
 
     private void clearAll() {
+        if (mShizukuShell != null) mShizukuShell.destroy();
         mResult = null;
         mRecyclerViewOutput.setAdapter(null);
-        mTitle.setText(null);
         mSearchButton.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
         mCommand.requestFocus();
@@ -271,6 +294,7 @@ public class aShellFragment extends Fragment {
         if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
             return;
         }
+        if (mShizukuShell != null) mShizukuShell.destroy();
         runShellCommand(mCommand.getText().toString().replace("\n", ""), activity);
     }
 
@@ -283,43 +307,48 @@ public class aShellFragment extends Fragment {
             hideSearchBar();
         }
 
+        String finalCommand;
+        if (command.startsWith("adb shell ")) {
+            finalCommand = command.replace("adb shell ", "");
+        } else if (command.startsWith("adb -d shell ")) {
+            finalCommand = command.replace("adb -d shell ", "");
+        } else {
+            finalCommand = command;
+        }
+        mHistory.add(finalCommand);
+        String mTitleText = "<font color=\"" + Utils.getColor(R.color.colorBlue, activity) + "\">shell@" + Utils.getDeviceName() + "</font># <i>" + finalCommand + "</i>";
+        if (mResult == null) {
+            mResult = new ArrayList<>();
+        }
+        mResult.add(mTitleText);
+
         ExecutorService mExecutors = Executors.newSingleThreadExecutor();
         mExecutors.execute(() -> {
-            String finalCommand;
-            if (command.startsWith("adb shell ")) {
-                finalCommand = command.replace("adb shell ", "");
-            } else if (command.startsWith("adb -d shell ")) {
-                finalCommand = command.replace("adb -d shell ", "");
-            } else {
-                finalCommand = command;
-            }
-            mHistory.add(finalCommand);
             if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                String mTitleText = "shell@" + Utils.getDeviceName() + "# " + finalCommand;
-                mResult = Utils.runCommand(finalCommand);
+                mPosition = mResult.size();
+                mShizukuShell = new ShizukuShell(mResult, finalCommand);
+                mShizukuShell.exec();
                 try {
                     TimeUnit.MILLISECONDS.sleep(250);
                 } catch (InterruptedException ignored) {}
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    mTitle.setText(mTitleText);
                     if (mHistoryButton.getVisibility() != View.VISIBLE) {
                         mHistoryButton.setVisibility(View.VISIBLE);
                     }
-                    if (mResult.size() > 0) {
+                    if (mResult != null && mResult.size() > 0) {
                         mSearchButton.setVisibility(View.VISIBLE);
+                        mResult.add("aShell: Finish");
                     }
                     mCommand.requestFocus();
-                    mResult.add("aShell: Finish");
-                    updateUI(mResult);
                 });
             } else {
                 new Handler(Looper.getMainLooper()).post(() ->
-                        new MaterialAlertDialogBuilder(requireActivity())
+                        new MaterialAlertDialogBuilder(activity)
                                 .setCancelable(false)
                                 .setIcon(R.mipmap.ic_launcher)
                                 .setTitle(getString(R.string.app_name))
                                 .setMessage(getString(R.string.shizuku_access_denied_message))
-                                .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> requireActivity().finish())
+                                .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> activity.finish())
                                 .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)
                                 ).show());
             }
@@ -329,8 +358,24 @@ public class aShellFragment extends Fragment {
     }
 
     private void updateUI(List<String> data) {
-        ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(data);
-        mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+        List<String> mData = new ArrayList<>();
+        try {
+            for (String result : data) {
+                if (!result.trim().isEmpty() && !result.equals("aShell: Finish")) {
+                    mData.add(result);
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
+        ExecutorService mExecutors = Executors.newSingleThreadExecutor();
+        mExecutors.execute(() -> {
+            ShellOutputAdapter mShellOutputAdapter = new ShellOutputAdapter(mData);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                mRecyclerViewOutput.setAdapter(mShellOutputAdapter);
+                mRecyclerViewOutput.scrollToPosition(mData.size() - 1);
+            });
+            if (!mExecutors.isShutdown()) mExecutors.shutdown();
+        });
     }
 
     private class RefreshThread extends Thread {
@@ -357,7 +402,7 @@ public class aShellFragment extends Fragment {
                 mRefreshThread.interrupt();
             } catch(Exception ignored) {}
         }
-        Utils.destroyProcess();
+        if (mShizukuShell != null) mShizukuShell.destroy();
     }
 
 }

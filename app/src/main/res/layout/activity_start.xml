@@ -35,7 +35,7 @@
             android:id="@+id/start_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/ColorBlue"
+            app:cardBackgroundColor="@color/colorBlue"
             android:layout_margin="10dp"
             app:cardCornerRadius="15dp" >
 
