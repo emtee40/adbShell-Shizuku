@@ -19,8 +19,8 @@ android {
         applicationId "in.sunilpaulmathew.ashell"
         minSdk 24
         targetSdk 33
-        versionCode 3
-        versionName "beta-v0.3"
+        versionCode 4
+        versionName "beta-v0.4"
         signingConfig signingConfigs.release
     }
 
