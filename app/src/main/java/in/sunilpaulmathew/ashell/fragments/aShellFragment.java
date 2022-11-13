@@ -52,7 +52,8 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
-    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton;
+    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton,
+            mSendButton, mSettingsButton;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
     private Thread mRefreshThread = null;
@@ -72,6 +73,7 @@ public class aShellFragment extends Fragment {
         mHistoryButton = mRootView.findViewById(R.id.history);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
+        mSendButton = mRootView.findViewById(R.id.send);
         mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
         mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -114,6 +116,8 @@ public class aShellFragment extends Fragment {
                 }
             }
         });
+
+        mSendButton.setOnClickListener(v -> initializeShell(requireActivity()));
 
         mSettingsButton.setOnClickListener(v -> {
             if (mShizukuShell != null && mShizukuShell.isBusy()) {

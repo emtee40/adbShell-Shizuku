@@ -84,28 +84,44 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
     </FrameLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/colorBlue"
-        android:hint="@string/command_title" >
+        android:layout_height="wrap_content" >
 
-        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/shell_command"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center"
-            android:textColor="@color/colorBlue"
-            android:hint="@string/command_hint"
-            android:inputType="textMultiLine"
-            android:gravity="center_vertical"
-            android:imeOptions="actionSend"
-            android:cursorVisible="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/colorBlue"
+            android:hint="@string/command_title"
+            android:padding="5dp" >
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/shell_command"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:textColor="@color/colorBlue"
+                android:hint="@string/command_hint"
+                android:inputType="textMultiLine"
+                android:gravity="center_vertical"
+                android:imeOptions="actionSend"
+                android:cursorVisible="true"
+                android:layout_marginEnd="45dp"
+                android:padding="10dp"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:padding="10dp"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_send"
+            android:background="@null"
+            android:tint="@color/colorBlue" />
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_commands"
