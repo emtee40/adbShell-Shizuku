@@ -11,6 +11,7 @@ public class Commands {
     public static List<CommandItems> commandList() {
         List<CommandItems> mCommands = new ArrayList<>();
         mCommands.add(new CommandItems("cat <file_path>", "Display the contents of a text file", "cat /system/build.prop"));
+        mCommands.add(new CommandItems("clear", "Clear terminal screen", null));
         mCommands.add(new CommandItems("cp <from> <to>", "Copy a file", "cp /system/build.prop /sdcard\nor\ncp /system/build.prop /sdcard/build_prop-backup.txt"));
         mCommands.add(new CommandItems("cp -r <from> <to>", "Copy a file or directory", "cp -r /system/app /sdcard\n\ncp -r /system/app /sdcard/abc"));
         mCommands.add(new CommandItems("dumpsys activity", "Print activity info", null));
@@ -20,12 +21,18 @@ public class Commands {
         mCommands.add(new CommandItems("dumpsys battery reset", "Reset battery", null));
         mCommands.add(new CommandItems("dumpsys display", "Primt display stats", null));
         mCommands.add(new CommandItems("dumpsys iphonesybinfo", "Get IMEI", null));
+        mCommands.add(new CommandItems("echo <message>", "Display message on screen", "echo Hallo World"));
+        mCommands.add(new CommandItems("file <file_path>", "Determine file type", "file /system/build.prop"));
+        mCommands.add(new CommandItems("grep", "Search file(s) for lines that match a given pattern", null));
+        mCommands.add(new CommandItems("kill <pid>", "Kill a process by specifying its PID", null));
+        mCommands.add(new CommandItems("logcat", "Display real-time log of system messages, including stack traces", null));
         mCommands.add(new CommandItems("ls", "List contents of a directory", "ls /system"));
         mCommands.add(new CommandItems("ls -R", "List subdirectories recursively", "ls -R /system"));
         mCommands.add(new CommandItems("ls -s", "Print size of each file", "ls -s /system"));
         mCommands.add(new CommandItems("mkdir <file_path>", "Create a directory", "mkdir /sdcard/abc"));
         mCommands.add(new CommandItems("mv <from> <to>", "Move a file or directory", "mv /system/app /sdcard\n\nmv /system/app /sdcard/abc"));
         mCommands.add(new CommandItems("netstat", "List TCP connectivity", null));
+        mCommands.add(new CommandItems("ping", "Test a network connection", null));
         mCommands.add(new CommandItems("pm clear <package>", "Delete all data associated with an app", "pm clear com.android.package"));
         mCommands.add(new CommandItems("pm clear --cache-only <package>", "Only clear cache data associated with an app", "pm clear --cache-only com.android.package"));
         mCommands.add(new CommandItems("pm clear --user <user_id> <package>", "Only delete the data associated with a given user", "pm clear --user 0 com.android.package"));
@@ -101,6 +108,11 @@ public class Commands {
         mCommands.add(new CommandItems("rm <file_path>", "Delete a file", "rm /sdcard/example.txt"));
         mCommands.add(new CommandItems("rm -r <file_path>", "Delete a file or directory", "rm -r /sdcard/abc"));
         mCommands.add(new CommandItems("service list", "List all services", null));
+        mCommands.add(new CommandItems("sleep <second>", "Delay for a specified time", "sleep 5"));
+        mCommands.add(new CommandItems("sync", "Synchronize data on disk with memory", null));
+        mCommands.add(new CommandItems("top", "List processes running on the system", null));
+        mCommands.add(new CommandItems("top -n <number>", "Update display <number> times, then exit", "top -n1"));
+        mCommands.add(new CommandItems("whoami", "Print the current user id and name", null));
         mCommands.add(new CommandItems("wm density", "Displays current screen density", null));
         mCommands.add(new CommandItems("wm density reset", "Reset screen density to default", null));
         mCommands.add(new CommandItems("wm size", "Displays the current screen resolution", null));

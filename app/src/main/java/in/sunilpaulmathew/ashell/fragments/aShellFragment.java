@@ -317,6 +317,13 @@ public class aShellFragment extends Fragment {
         }
         mHistory.add(finalCommand);
         String mTitleText = "<font color=\"" + Utils.getColor(R.color.colorBlue, activity) + "\">shell@" + Utils.getDeviceName() + "</font># <i>" + finalCommand + "</i>";
+        if (finalCommand.equals("clear")) {
+            mResult.clear();
+            updateUI(mResult);
+            mClearButton.setVisibility(View.GONE);
+            mSearchButton.setVisibility(View.GONE);
+            return;
+        }
         if (mResult == null) {
             mResult = new ArrayList<>();
         }
@@ -337,6 +344,7 @@ public class aShellFragment extends Fragment {
                     }
                     if (mResult != null && mResult.size() > 0) {
                         mSearchButton.setVisibility(View.VISIBLE);
+                        mClearButton.setVisibility(View.VISIBLE);
                         mResult.add("aShell: Finish");
                     }
                     mCommand.requestFocus();
