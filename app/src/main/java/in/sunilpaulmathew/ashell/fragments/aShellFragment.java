@@ -1,13 +1,19 @@
 package in.sunilpaulmathew.ashell.fragments;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -21,12 +27,18 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -52,8 +64,8 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
-    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton,
-            mSendButton, mSettingsButton;
+    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton;
+    private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
     private Thread mRefreshThread = null;
@@ -69,11 +81,12 @@ public class aShellFragment extends Fragment {
 
         mCommand = mRootView.findViewById(R.id.shell_command);
         mSearchWord = mRootView.findViewById(R.id.search_word);
+        mSaveCard = mRootView.findViewById(R.id.save_card);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
-        mSendButton = mRootView.findViewById(R.id.send);
+        AppCompatImageButton mSendButton = mRootView.findViewById(R.id.send);
         mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
         mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -237,6 +250,54 @@ public class aShellFragment extends Fragment {
             popupMenu.show();
         });
 
+        mSaveCard.setOnClickListener(v -> {
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = mPosition; i < mResult.size(); i++) {
+                if (!mResult.get(i).equals("aShell: Finish") && !mResult.get(i).equals("<i></i>")) {
+                    sb.append(mResult.get(i)).append("\n");
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, mHistory.get(mHistory.size() - 1)
+                            .replace("/", "-").replace(" ", "") + ".txt");
+                    values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
+                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                    Uri uri = requireActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                    OutputStream outputStream = requireActivity().getContentResolver().openOutputStream(uri);
+                    outputStream.write(sb.toString().getBytes());
+                    outputStream.close();
+                } catch (IOException ignored) {
+                }
+            } else {
+                if (requireActivity().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(), new String[] {
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    }, 0);
+                    return;
+                }
+                try {
+                    FileWriter writer = new FileWriter(new File(Environment.DIRECTORY_DOWNLOADS, mHistory.get(mHistory.size() - 1)
+                            .replace("/", "-").replace(" ", "") + ".txt"));
+                    writer.write(sb.toString());
+                    writer.close();
+                } catch (IOException ignored) {
+                }
+            }
+            new MaterialAlertDialogBuilder(requireActivity())
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(getString(R.string.shell_output_saved_message, Environment.DIRECTORY_DOWNLOADS))
+                    .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    }).show();
+        });
+
         mRefreshThread = new RefreshThread();
         mRefreshThread.start();
 
@@ -280,6 +341,7 @@ public class aShellFragment extends Fragment {
         mResult = null;
         mRecyclerViewOutput.setAdapter(null);
         mSearchButton.setVisibility(View.GONE);
+        mSaveCard.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
         mCommand.requestFocus();
     }
@@ -326,6 +388,7 @@ public class aShellFragment extends Fragment {
             updateUI(mResult);
             mClearButton.setVisibility(View.GONE);
             mSearchButton.setVisibility(View.GONE);
+            mSaveCard.setVisibility(View.GONE);
             return;
         }
         if (mResult == null) {
@@ -349,6 +412,7 @@ public class aShellFragment extends Fragment {
                     if (mResult != null && mResult.size() > 0) {
                         mSearchButton.setVisibility(View.VISIBLE);
                         mClearButton.setVisibility(View.VISIBLE);
+                        mSaveCard.setVisibility(View.VISIBLE);
                         mResult.add("<i></i>");
                         mResult.add("aShell: Finish");
                     }
