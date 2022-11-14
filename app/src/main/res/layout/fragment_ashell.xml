@@ -92,12 +92,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:src="@drawable/ic_numbers"
+                android:tint="@color/colorBlue"
+                android:background="@null"
+                android:clickable="false" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxStrokeColor="@color/colorBlue"
                 android:hint="@string/command_title"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="50dp"
                 android:padding="5dp" >
 
                 <androidx.appcompat.widget.AppCompatAutoCompleteTextView
@@ -111,20 +122,30 @@
                     android:gravity="center_vertical"
                     android:imeOptions="actionSend"
                     android:cursorVisible="true"
-                    android:layout_marginEnd="45dp"
                     android:padding="10dp"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/send"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/send_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/colorBlue"
+                android:layout_gravity="end|center"
                 android:layout_margin="5dp"
-                android:layout_gravity="end|center_vertical"
-                android:src="@drawable/ic_send"
-                android:background="@null"
-                android:tint="@color/colorBlue" />
+                app:cardCornerRadius="20dp" >
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/colorWhite"
+                    android:src="@drawable/ic_help"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:background="@null"
+                    android:clickable="false" />
+            </com.google.android.material.card.MaterialCardView>
         </FrameLayout>
 
         <androidx.recyclerview.widget.RecyclerView

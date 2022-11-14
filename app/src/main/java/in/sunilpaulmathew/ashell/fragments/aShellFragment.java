@@ -1,6 +1,5 @@
 package in.sunilpaulmathew.ashell.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -82,6 +81,7 @@ public class aShellFragment extends Fragment {
         mCommand = mRootView.findViewById(R.id.shell_command);
         mSearchWord = mRootView.findViewById(R.id.search_word);
         mSaveCard = mRootView.findViewById(R.id.save_card);
+        MaterialCardView mSendCard = mRootView.findViewById(R.id.send_card);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
         mSettingsButton = mRootView.findViewById(R.id.settings);
@@ -108,7 +108,8 @@ public class aShellFragment extends Fragment {
                     initializeShell(requireActivity());
                 } else {
                     RecyclerView mRecyclerViewCommands = mRootView.findViewById(R.id.recycler_view_commands);
-                    if (!s.toString().isEmpty()) {
+                    if (!s.toString().trim().isEmpty()) {
+                        mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_send, requireActivity()));
                         new Handler(Looper.getMainLooper()).post(() -> {
                             CommandsAdapter mCommandsAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
                             mRecyclerViewCommands.setLayoutManager(new LinearLayoutManager(requireActivity()));
@@ -125,12 +126,20 @@ public class aShellFragment extends Fragment {
                         });
                     } else {
                         mRecyclerViewCommands.setVisibility(View.GONE);
+                        mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_help, requireActivity()));
                     }
                 }
             }
         });
 
-        mSendButton.setOnClickListener(v -> initializeShell(requireActivity()));
+        mSendCard.setOnClickListener(v -> {
+            if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
+                Intent examples = new Intent(requireActivity(), ExamplesActivity.class);
+                startActivity(examples);
+            } else {
+                initializeShell(requireActivity());
+            }
+        });
 
         mSettingsButton.setOnClickListener(v -> {
             if (mShizukuShell != null && mShizukuShell.isBusy()) {

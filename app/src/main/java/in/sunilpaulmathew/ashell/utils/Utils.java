@@ -3,6 +3,7 @@ package in.sunilpaulmathew.ashell.utils;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
@@ -17,6 +18,10 @@ import in.sunilpaulmathew.ashell.R;
  * Created by sunilpaulmathew <sunil.kde@gmail.com> on October 28, 2022
  */
 public class Utils {
+
+    public static Drawable getDrawable(int drawable, Context context) {
+        return ContextCompat.getDrawable(context, drawable);
+    }
 
     public static int getColor(int color, Context context) {
         return ContextCompat.getColor(context, color);
