@@ -63,7 +63,7 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
-    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton;
+    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton, mStopButton;
     private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
@@ -84,6 +84,7 @@ public class aShellFragment extends Fragment {
         MaterialCardView mSendCard = mRootView.findViewById(R.id.send_card);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
+        mStopButton = mRootView.findViewById(R.id.stop);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
         AppCompatImageButton mSendButton = mRootView.findViewById(R.id.send);
@@ -142,10 +143,6 @@ public class aShellFragment extends Fragment {
         });
 
         mSettingsButton.setOnClickListener(v -> {
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
-                return;
-            }
             PopupMenu popupMenu = new PopupMenu(requireContext(), mSettingsButton);
             Menu menu = popupMenu.getMenu();
             menu.add(Menu.NONE, 0, Menu.NONE, R.string.shizuku_about);
@@ -181,10 +178,6 @@ public class aShellFragment extends Fragment {
 
         mClearButton.setOnClickListener(v -> {
             if (mResult == null) return;
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
-                return;
-            }
             if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean("clearAllMessage", true)) {
                 new MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.mipmap.ic_launcher)
@@ -202,20 +195,18 @@ public class aShellFragment extends Fragment {
         });
 
         mSearchButton.setOnClickListener(v -> {
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
-                return;
-            }
-            if (mSearchWord.getVisibility() == View.GONE) {
-                mSearchWord.setVisibility(View.VISIBLE);
+            if (mHistoryButton.getVisibility() == View.VISIBLE) {
                 mHistoryButton.setVisibility(View.GONE);
-                mClearButton.setVisibility(View.GONE);
-                mSettingsButton.setVisibility(View.GONE);
-                mSearchButton.setVisibility(View.GONE);
-                mCommand.setText(null);
-                mCommand.setHint(null);
-                mSearchWord.requestFocus();
             }
+            if (mClearButton.getVisibility() == View.VISIBLE) {
+                mClearButton.setVisibility(View.GONE);
+            }
+            mSettingsButton.setVisibility(View.GONE);
+            mSearchButton.setVisibility(View.GONE);
+            mSearchWord.setVisibility(View.VISIBLE);
+            mSearchWord.requestFocus();
+            mCommand.setText(null);
+            mCommand.setHint(null);
         });
 
         mSearchWord.addTextChangedListener(new TextWatcher() {
@@ -259,11 +250,12 @@ public class aShellFragment extends Fragment {
             popupMenu.show();
         });
 
+        mStopButton.setOnClickListener(v -> {
+            mShizukuShell.destroy();
+            mStopButton.setVisibility(View.GONE);
+        });
+
         mSaveCard.setOnClickListener(v -> {
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                Utils.snackBar(mRootView, getString(R.string.app_busy_message)).show();
-                return;
-            }
             StringBuilder sb = new StringBuilder();
             for (int i = mPosition; i < mResult.size(); i++) {
                 if (!mResult.get(i).equals("aShell: Finish") && !mResult.get(i).equals("<i></i>")) {
@@ -351,18 +343,23 @@ public class aShellFragment extends Fragment {
         mRecyclerViewOutput.setAdapter(null);
         mSearchButton.setVisibility(View.GONE);
         mSaveCard.setVisibility(View.GONE);
+        mClearButton.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
-        mCommand.requestFocus();
+        if (!mCommand.isFocused()) mCommand.requestFocus();
     }
 
     private void hideSearchBar() {
         mSearchWord.setText(null);
-        mCommand.requestFocus();
         mSearchWord.setVisibility(View.GONE);
+        if (!mCommand.isFocused()) mCommand.requestFocus();
         mSettingsButton.setVisibility(View.VISIBLE);
-        mHistoryButton.setVisibility(View.VISIBLE);
-        mClearButton.setVisibility(View.VISIBLE);
-        mSearchButton.setVisibility(View.VISIBLE);
+        if (mHistory != null && mHistory.size() > 0) {
+            mHistoryButton.setVisibility(View.VISIBLE);
+        }
+        if (mResult != null && mResult.size() > 0 && !mShizukuShell.isBusy()) {
+            mClearButton.setVisibility(View.VISIBLE);
+            mSearchButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeShell(Activity activity) {
@@ -375,11 +372,16 @@ public class aShellFragment extends Fragment {
 
     private void runShellCommand(String command, Activity activity) {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-        if (mHistory == null) mHistory = new ArrayList<>();
         mCommand.setText(null);
         mCommand.setHint(null);
         if (mSearchWord.getVisibility() == View.VISIBLE) {
-            hideSearchBar();
+            mSearchWord.setText(null);
+            mSearchWord.setVisibility(View.GONE);
+            mSettingsButton.setVisibility(View.VISIBLE);
+        } else {
+            mHistoryButton.setVisibility(View.GONE);
+            mClearButton.setVisibility(View.GONE);
+            mSearchButton.setVisibility(View.GONE);
         }
 
         String finalCommand;
@@ -390,16 +392,37 @@ public class aShellFragment extends Fragment {
         } else {
             finalCommand = command;
         }
-        mHistory.add(finalCommand);
-        String mTitleText = "<font color=\"" + Utils.getColor(R.color.colorBlue, activity) + "\">shell@" + Utils.getDeviceName() + "</font># <i>" + finalCommand + "</i>";
+
         if (finalCommand.equals("clear")) {
-            mResult.clear();
-            updateUI(mResult);
-            mClearButton.setVisibility(View.GONE);
-            mSearchButton.setVisibility(View.GONE);
-            mSaveCard.setVisibility(View.GONE);
+            if (mResult != null) {
+                mResult.clear();
+                updateUI(mResult);
+            }
             return;
         }
+
+        if (finalCommand.equals("exit")) {
+            new MaterialAlertDialogBuilder(activity)
+                    .setCancelable(false)
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(getString(R.string.quit_app_message))
+                    .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    })
+                    .setPositiveButton(getString(R.string.quit), (dialogInterface, i) -> activity.finish()).show();
+            return;
+        }
+
+        if (mHistory == null) {
+            mHistory = new ArrayList<>();
+        }
+        mHistory.add(finalCommand);
+
+        mSaveCard.setVisibility(View.GONE);
+        mStopButton.setVisibility(View.VISIBLE);
+
+        String mTitleText = "<font color=\"" + Utils.getColor(R.color.colorBlue, activity) + "\">shell@" + Utils.getDeviceName() + "</font># <i>" + finalCommand + "</i>";
+
         if (mResult == null) {
             mResult = new ArrayList<>();
         }
@@ -414,31 +437,33 @@ public class aShellFragment extends Fragment {
                 try {
                     TimeUnit.MILLISECONDS.sleep(250);
                 } catch (InterruptedException ignored) {}
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    if (mHistoryButton.getVisibility() != View.VISIBLE) {
+            }
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                    if (mHistory != null && mHistory.size() > 0 && mHistoryButton.getVisibility() != View.VISIBLE) {
                         mHistoryButton.setVisibility(View.VISIBLE);
                     }
                     if (mResult != null && mResult.size() > 0) {
-                        mSearchButton.setVisibility(View.VISIBLE);
                         mClearButton.setVisibility(View.VISIBLE);
                         mSaveCard.setVisibility(View.VISIBLE);
+                        mSearchButton.setVisibility(View.VISIBLE);
                         mResult.add("<i></i>");
                         mResult.add("aShell: Finish");
                     }
-                    mCommand.requestFocus();
-                });
-            } else {
-                new Handler(Looper.getMainLooper()).post(() ->
-                        new MaterialAlertDialogBuilder(activity)
-                                .setCancelable(false)
-                                .setIcon(R.mipmap.ic_launcher)
-                                .setTitle(getString(R.string.app_name))
-                                .setMessage(getString(R.string.shizuku_access_denied_message))
-                                .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> activity.finish())
-                                .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)
-                                ).show());
-            }
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                } else {
+                    new MaterialAlertDialogBuilder(activity)
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle(getString(R.string.app_name))
+                            .setMessage(getString(R.string.shizuku_access_denied_message))
+                            .setNegativeButton(getString(R.string.quit), (dialogInterface, i) -> activity.finish())
+                            .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)
+                            ).show();
+                }
+                mStopButton.setVisibility(View.GONE);
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                if (!mCommand.isFocused()) mCommand.requestFocus();
+            });
             if (!mExecutors.isShutdown()) mExecutors.shutdown();
         });
     }
