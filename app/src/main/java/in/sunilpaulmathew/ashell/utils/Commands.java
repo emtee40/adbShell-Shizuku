@@ -10,6 +10,9 @@ public class Commands {
 
     public static List<CommandItems> commandList() {
         List<CommandItems> mCommands = new ArrayList<>();
+        mCommands.add(new CommandItems("am force-stop <package>", "Completely stop a given package", "am force-stop com.android.package"));
+        mCommands.add(new CommandItems("am  kill <package>", "Kill all background processes associated with a given package", "am kill com.android.package"));
+        mCommands.add(new CommandItems("am kill-all", "Kill all processes that are safe to kill (cached, etc)", null));
         mCommands.add(new CommandItems("cat <file_path>", "Display the contents of a text file", "cat /system/build.prop"));
         mCommands.add(new CommandItems("clear", "Clear terminal screen", null));
         mCommands.add(new CommandItems("cp <from> <to>", "Copy a file", "cp /system/build.prop /sdcard\nor\ncp /system/build.prop /sdcard/build_prop-backup.txt"));
@@ -22,6 +25,7 @@ public class Commands {
         mCommands.add(new CommandItems("dumpsys display", "Primt display stats", null));
         mCommands.add(new CommandItems("dumpsys iphonesybinfo", "Get IMEI", null));
         mCommands.add(new CommandItems("echo <message>", "Display message on screen", "echo Hallo World"));
+        mCommands.add(new CommandItems("exit", "Exit the shell", null));
         mCommands.add(new CommandItems("file <file_path>", "Determine file type", "file /system/build.prop"));
         mCommands.add(new CommandItems("grep", "Search file(s) for lines that match a given pattern", null));
         mCommands.add(new CommandItems("kill <pid>", "Kill a process by specifying its PID", null));
