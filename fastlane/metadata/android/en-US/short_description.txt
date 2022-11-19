@@ -1,0 +1,1 @@
+An application to run adb commands from a Shizuku powered android device!

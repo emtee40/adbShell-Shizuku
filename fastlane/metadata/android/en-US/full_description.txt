@@ -1,0 +1,16 @@
+<b>aShell</b> is an application to run adb commands locally from a [Shizuku](https://shizuku.rikka.app/) powered android device.
+
+<b>Requirements</b>
+
+- A fully working [Shizuku](https://shizuku.rikka.app/) (a completely opn-source project) environment. If you are not aware about Shizuku or don't want to use it, please do not bother installing this app. It simply won't work.
+- Basic knowledge about adb/Linux command-line.
+
+<b>Features</b>
+
+- An elegantly designed user interface.
+- Included a bundle of examples about common adb commands.
+- Handles continuously running commands, such as logcat, top, etc.
+- Search for specific text from the last command output.
+- Option to save last command output as a text file.
+- An auto-dark/light theme.
+- A lot more.

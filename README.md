@@ -11,7 +11,7 @@
 ## Features
 * An elegantly designed user interface.
 * Included a bundle of examples about common adb commands.
-* Handles continuously running comammnds, such as logcat, top, etc.
+* Handles continuously running commands, such as logcat, top, etc.
 * Search for specific text from the last command output.
 * Option to save last command output as a text file.
 * An auto-dark/light theme.
