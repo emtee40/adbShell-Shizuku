@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,8 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
-    private AppCompatImageButton mClearButton, mHistoryButton, mSearchButton, mSettingsButton, mStopButton;
+    private AppCompatImageButton mClearButton, mBottomArrow, mHistoryButton, mSearchButton,
+            mSettingsButton, mStopButton, mTopArrow;
     private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
@@ -82,12 +84,14 @@ public class aShellFragment extends Fragment {
         mSearchWord = mRootView.findViewById(R.id.search_word);
         mSaveCard = mRootView.findViewById(R.id.save_card);
         MaterialCardView mSendCard = mRootView.findViewById(R.id.send_card);
+        mBottomArrow = mRootView.findViewById(R.id.bottom);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
         mStopButton = mRootView.findViewById(R.id.stop);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
         AppCompatImageButton mSendButton = mRootView.findViewById(R.id.send);
+        mTopArrow = mRootView.findViewById(R.id.top);
         mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
         mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -299,6 +303,11 @@ public class aShellFragment extends Fragment {
                     }).show();
         });
 
+        mTopArrow.setOnClickListener(v -> mRecyclerViewOutput.scrollToPosition(0));
+
+        mBottomArrow.setOnClickListener(v -> mRecyclerViewOutput.scrollToPosition(Objects.requireNonNull(
+                mRecyclerViewOutput.getAdapter()).getItemCount() - 1));
+
         mRefreshThread = new RefreshThread();
         mRefreshThread.start();
 
@@ -345,6 +354,8 @@ public class aShellFragment extends Fragment {
         mSaveCard.setVisibility(View.GONE);
         mClearButton.setVisibility(View.GONE);
         mCommand.setHint(getString(R.string.command_hint));
+        mTopArrow.setVisibility(View.GONE);
+        mBottomArrow.setVisibility(View.GONE);
         if (!mCommand.isFocused()) mCommand.requestFocus();
     }
 
@@ -382,6 +393,11 @@ public class aShellFragment extends Fragment {
             mHistoryButton.setVisibility(View.GONE);
             mClearButton.setVisibility(View.GONE);
             mSearchButton.setVisibility(View.GONE);
+        }
+
+        if (mTopArrow.getVisibility() == View.VISIBLE) {
+            mTopArrow.setVisibility(View.GONE);
+            mBottomArrow.setVisibility(View.GONE);
         }
 
         String finalCommand;
@@ -447,6 +463,10 @@ public class aShellFragment extends Fragment {
                         mClearButton.setVisibility(View.VISIBLE);
                         mSaveCard.setVisibility(View.VISIBLE);
                         mSearchButton.setVisibility(View.VISIBLE);
+                        if (mResult.size() > 25) {
+                            mTopArrow.setVisibility(View.VISIBLE);
+                            mBottomArrow.setVisibility(View.VISIBLE);
+                        }
                         mResult.add("<i></i>");
                         mResult.add("aShell: Finish");
                     }
