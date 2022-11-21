@@ -429,6 +429,11 @@ public class aShellFragment extends Fragment {
             return;
         }
 
+        if (finalCommand.startsWith("su")) {
+            Utils.snackBar(activity.findViewById(android.R.id.content), getString(R.string.su_warning_message)).show();
+            return;
+        }
+
         if (mHistory == null) {
             mHistory = new ArrayList<>();
         }
