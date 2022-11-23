@@ -1,16 +1,18 @@
-# aShell
+# aShell - an ADB sell
 
-### An an application to run adb commands from a [Shizuku](https://shizuku.rikka.app/) powered android device!
+<p style="text-align: center"><img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="" width="250" height="450" /></p>
+
+### A local ADB shell for [Shizuku](https://shizuku.rikka.app/) powered android devices!
 
 ## Requirements
 * A fully working [Shizuku](https://shizuku.rikka.app/) environment.
-* Knowledge about basic adb/Linux commands.
+* Knowledge about basic ADB/Linux commands.
 
-## Download
+<!-- ## Download -->
 
 ## Features
 * An elegantly designed user interface.
-* Included a bundle of examples about common adb commands.
+* Included a bundle of examples about common ADB commands.
 * Handles continuously running commands, such as logcat, top, etc.
 * Search for specific text from the last command output.
 * Option to save last command output as a text file.

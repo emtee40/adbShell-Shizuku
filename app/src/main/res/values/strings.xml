@@ -2,13 +2,13 @@
     <string name="app_name" translatable="false">aShell</string>
 
     <string name="about">About</string>
-    <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.</string>
+    <string name="app_summary">Welcome to aShell: A local ADB shell for Shizuku powered android devices.</string>
     <string name="app_working_message">aShell is still working. Please wait for it to finish or manually stop (by clicking the stop button) to run a new command</string>
     <string name="cancel">Cancel</string>
     <string name="change_logs">Change-logs</string>
     <string name="change_logs_summary" translatable="false">%s\n - Properly handle continuously updating processes.\n - Improved main UI.\n - Improved icon visibility.\n - Miscellaneous changes.</string>
     <string name="clear_all_message">Clear everything on this screen?</string>
-    <string name="command_hint">Input adb command here</string>
+    <string name="command_hint">Input ADB command here</string>
     <string name="command_title">aShell Command Box</string>
     <string name="dismiss">Dismiss</string>
     <string name="examples">Examples</string>
@@ -22,6 +22,6 @@
     <string name="shizuku_about">About Shizuku</string>
     <string name="shizuku_access_denied_message">Access to Shizuku service is denied for aShell. aShell won\'t work without a proper Shizuku environment.</string>
     <string name="shizuku_unavailable_message">Shizuku is not installed or not properly configured on your device. aShell won\'t work without a proper Shizuku environment. Click here to learn more about Shizuku.</string>
-    <string name="su_warning_message">aShell is not designed for root-related use. Aborting.</string>
+    <string name="su_warning_message">aShell is not designed for root-related uses. Aborting.</string>
     <string name="yes">Yes</string>
 </resources>

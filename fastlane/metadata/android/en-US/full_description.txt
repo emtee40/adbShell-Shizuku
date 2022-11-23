@@ -1,4 +1,4 @@
-<b>aShell</b> is an application to run adb commands locally from a [Shizuku](https://shizuku.rikka.app/) powered android device.
+<b>aShell</b> is a local ADB shell for [Shizuku](https://shizuku.rikka.app/) powered android devices.
 
 <b>Requirements</b>
 

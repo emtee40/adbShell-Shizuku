@@ -11,7 +11,7 @@ public class Commands {
     public static List<CommandItems> commandList() {
         List<CommandItems> mCommands = new ArrayList<>();
         mCommands.add(new CommandItems("am force-stop <package>", "Completely stop a given package", "am force-stop com.android.package"));
-        mCommands.add(new CommandItems("am  kill <package>", "Kill all background processes associated with a given package", "am kill com.android.package"));
+        mCommands.add(new CommandItems("am kill <package>", "Kill all background processes associated with a given package", "am kill com.android.package"));
         mCommands.add(new CommandItems("am kill-all", "Kill all processes that are safe to kill (cached, etc)", null));
         mCommands.add(new CommandItems("cat <file_path>", "Display the contents of a text file", "cat /system/build.prop"));
         mCommands.add(new CommandItems("clear", "Clear terminal screen", null));
