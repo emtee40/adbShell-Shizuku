@@ -3,6 +3,7 @@
 
     <string name="about">About</string>
     <string name="app_summary">Welcome to aShell, an application to run adb commands from a Shizuku powered android device.</string>
+    <string name="app_working_message">aShell is still working. Please wait for it to finish or manually stop (by clicking the stop button) to run a new command</string>
     <string name="cancel">Cancel</string>
     <string name="change_logs">Change-logs</string>
     <string name="change_logs_summary" translatable="false">%s\n - Properly handle continuously updating processes.\n - Improved main UI.\n - Improved icon visibility.\n - Miscellaneous changes.</string>

@@ -377,7 +377,16 @@ public class aShellFragment extends Fragment {
         if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
             return;
         }
-        if (mShizukuShell != null) mShizukuShell.destroy();
+        if (mShizukuShell != null && mShizukuShell.isBusy()) {
+            new MaterialAlertDialogBuilder(activity)
+                    .setCancelable(false)
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(getString(R.string.app_working_message))
+                    .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    }).show();
+            return;
+        }
         runShellCommand(mCommand.getText().toString().replace("\n", ""), activity);
     }
 
@@ -385,6 +394,7 @@ public class aShellFragment extends Fragment {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         mCommand.setText(null);
         mCommand.setHint(null);
+        mCommand.clearFocus();
         if (mSearchWord.getVisibility() == View.VISIBLE) {
             mSearchWord.setText(null);
             mSearchWord.setVisibility(View.GONE);
