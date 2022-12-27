@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import in.sunilpaulmathew.ashell.BuildConfig;
@@ -69,7 +70,6 @@ public class aShellFragment extends Fragment {
     private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
-    private Thread mRefreshThread = null;
     private boolean mExit;
     private final Handler mHandler = new Handler();
     private int mPosition = 1;
@@ -308,8 +308,12 @@ public class aShellFragment extends Fragment {
         mBottomArrow.setOnClickListener(v -> mRecyclerViewOutput.scrollToPosition(Objects.requireNonNull(
                 mRecyclerViewOutput.getAdapter()).getItemCount() - 1));
 
-        mRefreshThread = new RefreshThread();
-        mRefreshThread.start();
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(() -> {
+            if (mResult != null && mResult.size() > 0 && !mResult.get(mResult.size() - 1).equals("aShell: Finish")) {
+                updateUI(mResult);
+            }
+        }, 0, 250, TimeUnit.MILLISECONDS);
 
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
@@ -524,30 +528,9 @@ public class aShellFragment extends Fragment {
         });
     }
 
-    private class RefreshThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                while (!isInterrupted()) {
-                    Thread.sleep(250);
-                    requireActivity().runOnUiThread(() -> {
-                        if (mResult != null && mResult.size() > 0 && !mResult.get(mResult.size() - 1).equals("aShell: Finish")) {
-                            updateUI(mResult);
-                        }
-                    });
-                }
-            } catch (InterruptedException ignored) {}
-        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mRefreshThread != null) {
-            try {
-                mRefreshThread.interrupt();
-            } catch(Exception ignored) {}
-        }
         if (mShizukuShell != null) mShizukuShell.destroy();
     }
 
