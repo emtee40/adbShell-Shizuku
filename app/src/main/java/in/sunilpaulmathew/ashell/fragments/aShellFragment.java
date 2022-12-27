@@ -66,7 +66,7 @@ public class aShellFragment extends Fragment {
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
     private AppCompatImageButton mClearButton, mBottomArrow, mHistoryButton, mSearchButton,
-            mSettingsButton, mStopButton, mTopArrow;
+            mSendButton, mSettingsButton, mTopArrow;
     private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
@@ -87,10 +87,9 @@ public class aShellFragment extends Fragment {
         mBottomArrow = mRootView.findViewById(R.id.bottom);
         mClearButton = mRootView.findViewById(R.id.clear);
         mHistoryButton = mRootView.findViewById(R.id.history);
-        mStopButton = mRootView.findViewById(R.id.stop);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
-        AppCompatImageButton mSendButton = mRootView.findViewById(R.id.send);
+        mSendButton = mRootView.findViewById(R.id.send);
         mTopArrow = mRootView.findViewById(R.id.top);
         mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
         mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
@@ -113,6 +112,9 @@ public class aShellFragment extends Fragment {
                     initializeShell(requireActivity());
                 } else {
                     RecyclerView mRecyclerViewCommands = mRootView.findViewById(R.id.recycler_view_commands);
+                    if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                        return;
+                    }
                     if (!s.toString().trim().isEmpty()) {
                         mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_send, requireActivity()));
                         new Handler(Looper.getMainLooper()).post(() -> {
@@ -138,7 +140,11 @@ public class aShellFragment extends Fragment {
         });
 
         mSendCard.setOnClickListener(v -> {
-            if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                mShizukuShell.destroy();
+                mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_help, requireActivity()));
+                mSendButton.setColorFilter(Utils.getColor(R.color.colorWhite, requireActivity()));
+            } else if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
                 Intent examples = new Intent(requireActivity(), ExamplesActivity.class);
                 startActivity(examples);
             } else {
@@ -252,11 +258,6 @@ public class aShellFragment extends Fragment {
                 return false;
             });
             popupMenu.show();
-        });
-
-        mStopButton.setOnClickListener(v -> {
-            mShizukuShell.destroy();
-            mStopButton.setVisibility(View.GONE);
         });
 
         mSaveCard.setOnClickListener(v -> {
@@ -454,7 +455,8 @@ public class aShellFragment extends Fragment {
         mHistory.add(finalCommand);
 
         mSaveCard.setVisibility(View.GONE);
-        mStopButton.setVisibility(View.VISIBLE);
+        mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_stop, requireActivity()));
+        mSendButton.setColorFilter(Utils.getColor(R.color.colorRed, requireActivity()));
 
         String mTitleText = "<font color=\"" + Utils.getColor(R.color.colorBlue, activity) + "\">shell@" + Utils.getDeviceName() + "</font># <i>" + finalCommand + "</i>";
 
@@ -499,7 +501,12 @@ public class aShellFragment extends Fragment {
                             .setPositiveButton(getString(R.string.request_permission), (dialogInterface, i) -> Shizuku.requestPermission(0)
                             ).show();
                 }
-                mStopButton.setVisibility(View.GONE);
+                if (mCommand.getText() == null || mCommand.getText().toString().trim().isEmpty()) {
+                    mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_help, requireActivity()));
+                } else {
+                    mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_send, requireActivity()));
+                }
+                mSendButton.setColorFilter(Utils.getColor(R.color.colorWhite, requireActivity()));
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 if (!mCommand.isFocused()) mCommand.requestFocus();
             });
