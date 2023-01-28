@@ -2,7 +2,7 @@
 
 <p style="text-align: center"><img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="" width="250" height="450" /></p>
 
-[![](https://img.shields.io/badge/aShell-v0.5-green)](https://apt.izzysoft.de/fdroid/index/apk/in.sunilpaulmathew.ashell)
+[![](https://img.shields.io/badge/aShell-v0.6-green)](https://apt.izzysoft.de/fdroid/index/apk/in.sunilpaulmathew.ashell)
 
 ### A local ADB shell for [Shizuku](https://shizuku.rikka.app/) powered android devices!
 
@@ -41,7 +41,7 @@ Some other ways to support the development includes, but not limited to
 
 ## License
 
-    Copyright (C) 2022-2023 sunilpaulmathew <sunil.kde@gmail.com>
+    Copyright (C) 2023-2024 sunilpaulmathew <sunil.kde@gmail.com>
 
     aShell is a free softwares: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the
