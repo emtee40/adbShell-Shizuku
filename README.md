@@ -2,7 +2,7 @@
 
 <p style="text-align: center"><img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="" width="250" height="450" /></p>
 
-[![](https://img.shields.io/badge/aShell-v0.6-green)](https://apt.izzysoft.de/fdroid/index/apk/in.sunilpaulmathew.ashell)
+[![](https://img.shields.io/badge/aShell-v0.6-green)](https://play.google.com/store/apps/details?id=in.sunilpaulmathew.ashell)
 
 ### A local ADB shell for [Shizuku](https://shizuku.rikka.app/) powered android devices!
 
@@ -12,12 +12,15 @@
 
 ## Download
 
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=in.sunilpaulmathew.ashell)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/in.sunilpaulmathew.ashell/)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-alt="Get it on IzzyOnDroid"
-height="80">](https://apt.izzysoft.de/fdroid/index/apk/in.sunilpaulmathew.ashell)
+     alt="Get it on IzzyOnDroid"
+     height="80">](https://apt.izzysoft.de/fdroid/index/apk/in.sunilpaulmathew.ashell)
 
 Or get the APK from the [Releases Section](https://gitlab.com/sunilpaulmathew/ashell/-/releases).
 
