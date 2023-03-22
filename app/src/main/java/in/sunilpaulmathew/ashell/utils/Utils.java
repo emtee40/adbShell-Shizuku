@@ -1,12 +1,15 @@
 package in.sunilpaulmathew.ashell.utils;
 
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -35,6 +38,13 @@ public class Utils {
 
     public static String getDeviceName() {
         return Build.MODEL;
+    }
+
+    public static void copyToClipboard(String text, Context context) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Copied to clipboard", text);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
     public static void loadShizukuWeb(Context context) {

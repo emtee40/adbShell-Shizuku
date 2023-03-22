@@ -14,6 +14,7 @@ import java.util.List;
 
 import in.sunilpaulmathew.ashell.R;
 import in.sunilpaulmathew.ashell.utils.CommandItems;
+import in.sunilpaulmathew.ashell.utils.Utils;
 
 /*
  * Created by sunilpaulmathew <sunil.kde@gmail.com> on November 08, 2022
@@ -59,13 +60,13 @@ public class ExamplesAdapter extends RecyclerView.Adapter<ExamplesAdapter.ViewHo
         @Override
         public void onClick(View view) {
             if (data.get(getAdapterPosition()).getExample() != null) {
-                LayoutInflater mLayoutInflater = LayoutInflater.from(view.getContext());
-                View exampleLayout = mLayoutInflater.inflate(R.layout.layout_example_alert, null);
-                MaterialTextView mExample = exampleLayout.findViewById(R.id.example);
-                mExample.setText(data.get(getAdapterPosition()).getExample());
                 new MaterialAlertDialogBuilder(view.getContext())
-                        .setView(exampleLayout)
-                        .show();
+                        .setMessage(data.get(getAdapterPosition()).getExample())
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                        })
+                        .setPositiveButton(R.string.copy, (dialogInterface, i) ->
+                                Utils.copyToClipboard(data.get(getAdapterPosition()).getExample(), view.getContext())
+                        ).show();
             }
         }
     }
