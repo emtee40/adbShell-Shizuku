@@ -5,8 +5,6 @@
     <string name="app_summary">Welcome to aShell: A local ADB shell for Shizuku powered android devices.</string>
     <string name="app_working_message">aShell is still working. Please wait for it to finish or manually stop (by clicking the stop button) to run a new command</string>
     <string name="cancel">Cancel</string>
-    <string name="change_logs">Change-logs</string>
-    <string name="change_logs_summary" translatable="false">%s\n - Fixed possible crashes on the main page.\n - Changed stop button position.\n - Improved handling continuously updating commands.\n - Miscellaneous changes.</string>
     <string name="clear_all_message">Clear everything on this screen?</string>
     <string name="command_hint">Input ADB command here</string>
     <string name="command_title">aShell Command Box</string>

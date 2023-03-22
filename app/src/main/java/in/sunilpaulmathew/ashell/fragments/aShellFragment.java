@@ -156,24 +156,15 @@ public class aShellFragment extends Fragment {
             PopupMenu popupMenu = new PopupMenu(requireContext(), mSettingsButton);
             Menu menu = popupMenu.getMenu();
             menu.add(Menu.NONE, 0, Menu.NONE, R.string.shizuku_about);
-            menu.add(Menu.NONE, 1, Menu.NONE, R.string.change_logs);
-            menu.add(Menu.NONE, 2, Menu.NONE, R.string.examples);
-            menu.add(Menu.NONE, 3, Menu.NONE, R.string.about);
+            menu.add(Menu.NONE, 1, Menu.NONE, R.string.examples);
+            menu.add(Menu.NONE, 2, Menu.NONE, R.string.about);
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == 0) {
                     Utils.loadShizukuWeb(requireActivity());
                 } else if (item.getItemId() == 1) {
-                    new MaterialAlertDialogBuilder(requireActivity())
-                            .setIcon(R.mipmap.ic_launcher)
-                            .setTitle(getString(R.string.change_logs))
-                            .setMessage(getString(R.string.change_logs_summary, getString(
-                                    R.string.app_name) + " " + BuildConfig.VERSION_NAME))
-                            .setPositiveButton(getString(R.string.cancel), (dialogInterface, i) -> {
-                            }).show();
-                } else if (item.getItemId() == 2) {
                     Intent examples = new Intent(requireActivity(), ExamplesActivity.class);
                     startActivity(examples);
-                } else if (item.getItemId() == 3) {
+                } else if (item.getItemId() == 2) {
                     new MaterialAlertDialogBuilder(requireActivity())
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
