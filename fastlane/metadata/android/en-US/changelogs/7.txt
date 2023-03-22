@@ -1,0 +1,4 @@
+* Switched to Material3 DayNight theme.
+* Imported Russian translations.
+* Updated build tools & dependencies.
+* Miscellaneous changes.

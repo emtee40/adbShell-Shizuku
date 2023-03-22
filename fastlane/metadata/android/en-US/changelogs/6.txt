@@ -1,4 +1,0 @@
-* Fixed possible crashes on the main page.
-* Changed stop button position.
-* Improved handling continuously updating commands.
-* Miscellaneous changes.
