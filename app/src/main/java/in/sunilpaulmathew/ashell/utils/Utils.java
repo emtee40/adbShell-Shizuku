@@ -15,6 +15,13 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import in.sunilpaulmathew.ashell.R;
 
 /*
@@ -22,12 +29,28 @@ import in.sunilpaulmathew.ashell.R;
  */
 public class Utils {
 
+    public static boolean isBookmarked(String command, Context context) {
+        return new File(context.getExternalFilesDir("bookmarks"), command).exists();
+    }
+
+    public static boolean deleteFromBookmark(String command, Context context) {
+        return new File(context.getExternalFilesDir("bookmarks"), command).delete();
+    }
+
     public static Drawable getDrawable(int drawable, Context context) {
         return ContextCompat.getDrawable(context, drawable);
     }
 
     public static int getColor(int color, Context context) {
         return ContextCompat.getColor(context, color);
+    }
+
+    public static List<String> getBookmarks(Context context) {
+        List<String> mBookmarks = new ArrayList<>();
+        for (File file : Objects.requireNonNull(context.getExternalFilesDir("bookmarks").listFiles())) {
+            mBookmarks.add(file.getName());
+        }
+        return mBookmarks;
     }
 
     public static Snackbar snackBar(View view, String message) {
@@ -40,11 +63,24 @@ public class Utils {
         return Build.MODEL;
     }
 
+    public static void addToBookmark(String command, Context context) {
+        create(command, new File(context.getExternalFilesDir("bookmarks"), command));
+    }
+
     public static void copyToClipboard(String text, Context context) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Copied to clipboard", text);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void create(String text, File path) {
+        try {
+            FileWriter writer = new FileWriter(path);
+            writer.write(text);
+            writer.close();
+        } catch (IOException ignored) {
+        }
     }
 
     public static void loadShizukuWeb(Context context) {

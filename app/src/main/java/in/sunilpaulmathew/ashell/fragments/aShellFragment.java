@@ -35,7 +35,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -65,8 +64,8 @@ public class aShellFragment extends Fragment {
 
     private AppCompatAutoCompleteTextView mCommand;
     private AppCompatEditText mSearchWord;
-    private AppCompatImageButton mClearButton, mBottomArrow, mHistoryButton, mSearchButton,
-            mSendButton, mSettingsButton, mTopArrow;
+    private AppCompatImageButton mClearButton, mBottomArrow, mHistoryButton, mSearchButton, mBookMark,
+            mBookMarks, mSendButton, mSettingsButton, mTopArrow;
     private MaterialCardView mSaveCard;
     private RecyclerView mRecyclerViewOutput;
     private ShizukuShell mShizukuShell = null;
@@ -89,12 +88,16 @@ public class aShellFragment extends Fragment {
         mHistoryButton = mRootView.findViewById(R.id.history);
         mSettingsButton = mRootView.findViewById(R.id.settings);
         mSearchButton = mRootView.findViewById(R.id.search);
+        mBookMark = mRootView.findViewById(R.id.bookmark);
+        mBookMarks = mRootView.findViewById(R.id.bookmarks);
         mSendButton = mRootView.findViewById(R.id.send);
         mTopArrow = mRootView.findViewById(R.id.top);
         mRecyclerViewOutput = mRootView.findViewById(R.id.recycler_view_output);
         mRecyclerViewOutput.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
         mCommand.requestFocus();
+
+        mBookMarks.setVisibility(Utils.getBookmarks(requireActivity()).size() > 0 ? View.VISIBLE : View.GONE);
 
         mCommand.addTextChangedListener(new TextWatcher() {
             @Override
@@ -117,6 +120,19 @@ public class aShellFragment extends Fragment {
                     }
                     if (!s.toString().trim().isEmpty()) {
                         mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_send, requireActivity()));
+                        mBookMark.setImageDrawable(Utils.getDrawable(Utils.isBookmarked(s.toString().trim(), requireActivity()) ? R.drawable.ic_starred : R.drawable.ic_star, requireActivity()));
+                        mBookMark.setVisibility(View.VISIBLE);
+                        mBookMark.setOnClickListener(v -> {
+                            if (Utils.isBookmarked(s.toString().trim(), requireActivity())) {
+                                Utils.deleteFromBookmark(s.toString().trim(), requireActivity());
+                                Utils.snackBar(mRootView, getString(R.string.bookmark_removed_message, s.toString().trim())).show();
+                            } else {
+                                Utils.addToBookmark(s.toString().trim(), requireActivity());
+                                Utils.snackBar(mRootView, getString(R.string.bookmark_added_message, s.toString().trim())).show();
+                            }
+                            mBookMark.setImageDrawable(Utils.getDrawable(Utils.isBookmarked(s.toString().trim(), requireActivity()) ? R.drawable.ic_starred : R.drawable.ic_star, requireActivity()));
+                            mBookMarks.setVisibility(Utils.getBookmarks(requireActivity()).size() > 0 ? View.VISIBLE : View.GONE);
+                        });
                         new Handler(Looper.getMainLooper()).post(() -> {
                             CommandsAdapter mCommandsAdapter = new CommandsAdapter(Commands.getCommand(s.toString()));
                             mRecyclerViewCommands.setLayoutManager(new LinearLayoutManager(requireActivity()));
@@ -132,6 +148,7 @@ public class aShellFragment extends Fragment {
                             });
                         });
                     } else {
+                        mBookMark.setVisibility(View.GONE);
                         mRecyclerViewCommands.setVisibility(View.GONE);
                         mSendButton.setImageDrawable(Utils.getDrawable(R.drawable.ic_help, requireActivity()));
                     }
@@ -202,6 +219,7 @@ public class aShellFragment extends Fragment {
             if (mClearButton.getVisibility() == View.VISIBLE) {
                 mClearButton.setVisibility(View.GONE);
             }
+            mBookMarks.setVisibility(View.GONE);
             mSettingsButton.setVisibility(View.GONE);
             mSearchButton.setVisibility(View.GONE);
             mSearchWord.setVisibility(View.VISIBLE);
@@ -231,6 +249,24 @@ public class aShellFragment extends Fragment {
                     updateUI(mResultSorted);
                 }
             }
+        });
+
+        mBookMarks.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(requireContext(), mCommand);
+            Menu menu = popupMenu.getMenu();
+            for (int i = 0; i < Utils.getBookmarks(requireActivity()).size(); i++) {
+                menu.add(Menu.NONE, i, Menu.NONE, Utils.getBookmarks(requireActivity()).get(i));
+            }
+            popupMenu.setOnMenuItemClickListener(item -> {
+                for (int i = 0; i < Utils.getBookmarks(requireActivity()).size(); i++) {
+                    if (item.getItemId() == i) {
+                        mCommand.setText(Utils.getBookmarks(requireActivity()).get(i));
+                        mCommand.setSelection(mCommand.getText().length());
+                    }
+                }
+                return false;
+            });
+            popupMenu.show();
         });
 
         mHistoryButton.setOnClickListener(v -> {
@@ -279,13 +315,8 @@ public class aShellFragment extends Fragment {
                     }, 0);
                     return;
                 }
-                try {
-                    FileWriter writer = new FileWriter(new File(Environment.DIRECTORY_DOWNLOADS, mHistory.get(mHistory.size() - 1)
-                            .replace("/", "-").replace(" ", "") + ".txt"));
-                    writer.write(sb.toString());
-                    writer.close();
-                } catch (IOException ignored) {
-                }
+                Utils.create(sb.toString(), new File(Environment.DIRECTORY_DOWNLOADS, mHistory.get(mHistory.size() - 1)
+                        .replace("/", "-").replace(" ", "") + ".txt"));
             }
             new MaterialAlertDialogBuilder(requireActivity())
                     .setIcon(R.mipmap.ic_launcher)
@@ -312,7 +343,7 @@ public class aShellFragment extends Fragment {
             public void handleOnBackPressed() {
                 if (mSearchWord.getVisibility() == View.VISIBLE) {
                     hideSearchBar();
-                } else if (mShizukuShell.isBusy()) {
+                } else if (mShizukuShell != null && mShizukuShell.isBusy()) {
                     new MaterialAlertDialogBuilder(requireActivity())
                             .setCancelable(false)
                             .setIcon(R.mipmap.ic_launcher)
@@ -359,6 +390,7 @@ public class aShellFragment extends Fragment {
         mSearchWord.setText(null);
         mSearchWord.setVisibility(View.GONE);
         if (!mCommand.isFocused()) mCommand.requestFocus();
+        mBookMarks.setVisibility(View.VISIBLE);
         mSettingsButton.setVisibility(View.VISIBLE);
         if (mHistory != null && mHistory.size() > 0) {
             mHistoryButton.setVisibility(View.VISIBLE);
@@ -394,6 +426,7 @@ public class aShellFragment extends Fragment {
         if (mSearchWord.getVisibility() == View.VISIBLE) {
             mSearchWord.setText(null);
             mSearchWord.setVisibility(View.GONE);
+            mBookMarks.setVisibility(View.VISIBLE);
             mSettingsButton.setVisibility(View.VISIBLE);
         } else {
             mHistoryButton.setVisibility(View.GONE);
