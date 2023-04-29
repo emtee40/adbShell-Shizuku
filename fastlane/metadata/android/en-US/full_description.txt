@@ -12,5 +12,10 @@
 - Handles continuously running commands, such as logcat, top, etc.
 - Search for specific text from the last command output.
 - Option to save last command output as a text file.
+- Bookmark frequently using commands.
 - An auto-dark/light theme.
 - A lot more.
+
+<b>Translations</b>
+
+Please help me to translate this application via <a href='https://poeditor.com/join/project/20PSoEAgfX'>POEditor</a>. You may also translate after downloading the original language string available <a href='https://gitlab.com/sunilpaulmathew/ashell/-/blob/master/app/src/main/res/values/strings.xml'>GitHub</a>.

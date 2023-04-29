@@ -2,7 +2,7 @@
 
 <p style="text-align: center"><img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="" width="250" height="450" /> <img src="https://gitlab.com/sunilpaulmathew/ashell/-/raw/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="" width="250" height="450" /></p>
 
-[![](https://img.shields.io/badge/aShell-v0.7-green)](https://play.google.com/store/apps/details?id=in.sunilpaulmathew.ashell)
+[![](https://img.shields.io/badge/aShell-v0.8-green)](https://play.google.com/store/apps/details?id=in.sunilpaulmathew.ashell)
 
 ### A local ADB shell for [Shizuku](https://shizuku.rikka.app/) powered android devices!
 
@@ -30,6 +30,7 @@ Or get the APK from the [Releases Section](https://gitlab.com/sunilpaulmathew/as
 * Handles continuously running commands, such as logcat, top, etc.
 * Search for specific text from the last command output.
 * Option to save last command output as a text file.
+* Bookmark frequently using commands.
 * An auto-dark/light theme.
 * A lot more.
 
@@ -44,7 +45,7 @@ Or get the APK from the [Releases Section](https://gitlab.com/sunilpaulmathew/as
 Some other ways to support the development includes, but not limited to
 <ol>
     <li>Contribute code to this project.</li>
-    <li><a href="https://gitlab.com/sunilpaulmathew/aShell/-/blob/master/app/src/main/res/values/strings.xml" target="_blank">Translate</a> this application into your local language (or improve existing translations).</li>
+    <li><a href="https://poeditor.com/join/project/20PSoEAgfX" target="_blank">Translate</a> this application into your local language (or improve existing translations).</li>
     <li>Share good words about this application with others (family, friends, and other enthusiastic android users).</li>
 </ol>
 
